@@ -1,14 +1,22 @@
 import React, { Component } from 'react'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
-import logo from './logo.svg'
+import { createStore, applyMiddleware, compose } from 'redux'
 import './App.css'
-import trackingReducer from './store/reducers/tracking'
+import trackingReducer from './store/reducers/tracking.reducer'
+import driversMiddleware from './store/middlewares/drivers.middleware'
+import subscribeMQTT from './store/subscriber'
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 export const store = createStore(
   trackingReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  composeEnhancers(
+    applyMiddleware(
+      driversMiddleware
+    )
+  )
 )
+
+subscribeMQTT()
 
 class App extends Component {
 
@@ -16,17 +24,11 @@ class App extends Component {
     return (
       <Provider store={store}>
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        gps track 
       </div>
       </Provider>
     );
   }
 }
 
-export default App;
+export default App

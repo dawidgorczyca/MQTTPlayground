@@ -1,4 +1,4 @@
-const mosca = require('mosca');
+const mosca = require('mosca')
 
 const settings = {
   port: 1883,
@@ -7,13 +7,13 @@ const settings = {
     bundle: true,
     static: './'
   }
-};
+}
 
-const server = new mosca.Server(settings);
+const server = new mosca.Server(settings)
 
 server.on('ready', () => {
-  console.log('ready');
-});
+  console.log('ready')
+})
 
 server.on('clientConnected', function(client) {
   console.log('client connected', client.id)
