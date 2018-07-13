@@ -5,6 +5,7 @@ import './App.css'
 import trackingReducer from './store/reducers/tracking.reducer'
 import driversMiddleware from './store/middlewares/drivers.middleware'
 import subscribeMQTT from './store/subscriber'
+import Window from './store/components/window/window'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 export const store = createStore(
@@ -24,11 +25,11 @@ class App extends Component {
     return (
       <Provider store={store}>
       <div className="App">
-        gps track 
+        <Window/>
       </div>
       </Provider>
     );
   }
 }
 
-export default App
+export default App;
