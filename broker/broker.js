@@ -39,3 +39,5 @@ server.on('clientDisconnecting', function(client) {
 server.on('clientDisconnected', function(client) {
   console.log('clientDisconnected : ', client.id)
 })
+
+require('./router').start();
