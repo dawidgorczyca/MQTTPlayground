@@ -33,3 +33,6 @@ server.on('clientDisconnecting', function(client) {
 server.on('clientDisconnected', function(client) {
   console.log('clientDisconnected : ', client.id)
 })
+server.on('published', function(payload) {
+  console.log(payload);
+})

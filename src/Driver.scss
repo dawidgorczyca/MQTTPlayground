@@ -1,0 +1,25 @@
+.driver-main {
+    padding: 20px;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    margin: auto;
+    text-align: center;
+    color: white;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    background-color: #333333fb;
+    border: 1px solid white;
+    
+    &.inactive {
+        background-color: #333333fb;
+    }
+
+    &.active {
+        background-color: darken(red, 15%) !important;
+    }
+}
