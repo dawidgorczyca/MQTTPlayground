@@ -40,7 +40,7 @@ function getCoordinates(dbData) {
     // This function should parse data from db and return array like [[15.1111,11.1211], [15.1211,11.1311], [15.1411,11.1711]]
     // Now only returns mock data
     // TODO
-    return [[51.9232596098182,15.5479544848897], [51.9346353438122,15.5496377380261], [51.9516533462176,15.552988353727]];
+    return [[52.29100104733827,13.56445608335514], [52.45533040829523,13.46008596616764], [52.6498863653857,13.24310598569889]];
 }
 
 function matchRoute(data, cb) {
