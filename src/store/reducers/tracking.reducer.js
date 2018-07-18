@@ -26,7 +26,7 @@ const defaultState = {
   drivers: []
 }
 
-const reducer = (state = defaultState, action) => {
+const trackingReducer = (state = defaultState, action) => {
   if(action.type.startsWith('driver/')) {
     return update(state, {
       drivers: {$set: [
@@ -50,4 +50,4 @@ const reducer = (state = defaultState, action) => {
   }
 }
 
-export default reducer
+export default trackingReducer

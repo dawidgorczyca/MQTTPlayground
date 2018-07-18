@@ -6,9 +6,9 @@ require('dotenv-safe').config();
 // const SECURE_CERT = __dirname + '/tls-cert.pem';
 
 const settings = {
-  port: 1883,
+  port: 1886,
   http: {
-    port: 1884,
+    port: 1887,
     bundle: true,
     static: './'
   },

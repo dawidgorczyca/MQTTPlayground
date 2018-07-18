@@ -11,15 +11,17 @@ function prepareLocationInfo(msg) {
 
 export default store => next => action => {
   if(action.type === MESSAGE) {
-    const currentState = store.getState()
+
+    const currentState = store.getState().tracking;
+
     const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers) : undefined
-    
+
     const msg = prepareLocationInfo(action.recieved_msg)
     const loc = {
       loc: msg[0],
       time: msg[1]
     }
-
+    
     existing ? store.dispatch(addDriver({
       id: action.sender,
       locations: [loc]
