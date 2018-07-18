@@ -11,7 +11,9 @@ export const MqttService = ( function () {
    * MQTT address to establish connection
    * @param {string}
    */
-  const client = mqtt.connect(BROKER_IP_ADDRESS);
+  let client = null;
+
+  const initializeMqttConnection = () => client = mqtt.connect(BROKER_IP_ADDRESS);
 
   /**
    * Send message via mqtt
@@ -33,6 +35,7 @@ export const MqttService = ( function () {
   }
 
   return {
+    initializeMqttConnection,
     sendPosition,
     sendMockedPosition
   };

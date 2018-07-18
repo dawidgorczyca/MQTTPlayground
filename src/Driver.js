@@ -16,6 +16,10 @@ class Driver extends React.Component {
     this.timeouts = [];
   }
 
+  componentDidMount() {
+    MqttService.initializeMqttConnection();
+  }
+
   handleDriverStartedStateChange = hasDriverStartedState => {
     if (hasDriverStartedState === true) {
       this.state.shouldDataBeMocked ? this.mockGpsData() : this.gatherGpsData();
