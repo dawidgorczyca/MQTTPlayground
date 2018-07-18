@@ -1,5 +1,24 @@
 .driver-main {
     text-align: center;
+    padding: 20px;
+}
+
+div+div {
+    padding: 10px;
+}
+
+.status {
+    color: white;
+    padding: 5px;
+    border-radius: 50px;
+
+    &.inactive {
+        background-color: red;
+    }
+
+    &.active {
+        background-color: green;
+    }
 }
 
 .btn {

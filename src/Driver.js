@@ -11,13 +11,21 @@ class Driver extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hasDriverStarted: false
+      hasDriverStarted: false,
+      driverId: "",
+      connected: false,
     };
     this.timeouts = [];
   }
 
   componentDidMount() {
-    MqttService.initializeMqttConnection();
+    const client = MqttService.initializeMqttConnection();
+    client.on("connect", () => {
+      this.setState({ connected: true});
+    });
+    client.on("offline", () => {
+      this.setState({ connected: false});
+    });
   }
 
   handleDriverStartedStateChange = hasDriverStartedState => {
@@ -35,7 +43,8 @@ class Driver extends React.Component {
           (this.sendPositionInterval = setInterval(
             MqttService.sendPosition,
             SENDING_GPS_GAP * 1000,
-            position
+            position,
+            this.state.driverId
           ))
       );
     }
@@ -44,19 +53,21 @@ class Driver extends React.Component {
   mockGpsData = () => {
     const interval = SENDING_GPS_GAP * 1000;
 
-    mockedGpsLocations.forEach((location, index) =>
-      this.timeouts[index] = setTimeout(
-        MqttService.sendMockedPosition,
-        index * interval,
-        location.latitude,
-        location.longitude
-      )
+    mockedGpsLocations.forEach(
+      (location, index) =>
+        (this.timeouts[index] = setTimeout(
+          MqttService.sendMockedPosition,
+          index * interval,
+          location.latitude,
+          location.longitude,
+          this.state.driverId
+        ))
     );
   };
 
   stopSendingGpsData = () => {
     clearInterval(this.sendPositionInterval);
-    this.timeouts.forEach( t => clearTimeout(t));
+    this.timeouts.forEach(t => clearTimeout(t));
   };
 
   handleGpsGatheringButton = e => {
@@ -69,6 +80,25 @@ class Driver extends React.Component {
   render = () => {
     return (
       <div className="driver-main">
+        <div>
+          Connection status:{" "}
+          <span
+            className={
+              "status" + (this.state.connected ? " active" : " inactive")
+            }
+          >
+            {this.state.connected ? "ONLINE" : "OFFLINE"}
+          </span>
+        </div>
+        <div>
+          <label htmlFor="driver-id">Driver id: </label>
+          <input
+            type="text"
+            id="driver-id"
+            placeholder="Type in driver id"
+            onChange={e => this.setState({ driverId: e.currentTarget.value })}
+          />
+        </div>
         <label htmlFor="mock-cb">Mock data</label>
         <input
           type="checkbox"

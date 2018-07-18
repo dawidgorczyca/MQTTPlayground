@@ -18,20 +18,42 @@ export const MqttService = ( function () {
   /**
    * Send message via mqtt
    * @param {Position} position
+   * @param {string} driverid
    */
-  const sendPosition = position => {
-    console.log(`Sended Real GPS Position : ${position.coords.latitude},${position.coords.longitude}|${Date.now()}`);
-    client.publish('Tracking/d1', `${position.coords.latitude},${position.coords.longitude}|${Date.now()}`);
+  const sendPosition = (position, driverId) => {
+    publishMessage(
+      { 
+        message: `${position.coords.latitude},${position.coords.longitude}|${Date.now()}`, 
+        driverId 
+      }
+    );
   };
 
   /**
    * Send mocked message via mqtt
    * @param {string} latitude 
    * @param {string} longitude 
+   * @param {string} driverId
    */
-  const sendMockedPosition = (latitude, longitude) => {
-    console.log(`Sended Mocked GPS Position : ${latitude},${longitude}|${Date.now()}`);
-    client.publish('Tracking/d1', `${latitude},${longitude}|${Date.now()}`);
+  const sendMockedPosition = (latitude, longitude, driverId) => {
+    publishMessage(
+      { 
+        message: `${latitude},${longitude}|${Date.now()}`, 
+        driverId 
+      }
+    );
+  }
+  /**
+   * @private Publish the message
+   * @param {string} latitude 
+   * @param {string} longitude 
+   * @param {string} driverId
+   * 
+   */
+  const publishMessage= ({ message, driverId }) => {
+    driverId = driverId || "default";
+    console.log(`Published ${message} from ${driverId}`);
+    client.publish(`Tracking/${driverId}`, message);
   }
 
   return {
