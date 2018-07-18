@@ -7,9 +7,9 @@ var appId = 'txpoz50GfMuyShPMF5I2';
 var appCode = 'nN57_wL6Z_SpALh5sgKoMg';
 
 
-module.exports.getAllPoints = (cb) => {
+module.exports.getPointsAfterMatching = (clientId, cb) => {
 
-    db.getAllData(data => {
+    db.getDataForClient(clientId, data => {
 
         const coordinates = getCoordinates(data); 
 
@@ -21,9 +21,18 @@ module.exports.getAllPoints = (cb) => {
 
 }
 
-module.exports.calculateCost = (cb) => {
+module.exports.getPointsInArea = (clientId, cb) => {
 
-    db.getAllData(data => {
+    this.getPointsAfterMatching(clientId, data => {
+        const pointsInArea = data.filter(obj => obj[3]).map(obj => obj.slice(0, 2));
+        cb(pointsInArea);
+    });
+
+}
+
+module.exports.calculateCost = (clientId, cb) => {
+
+    db.getDataForClient(clientId, data => {
 
         const coordinates = getCoordinates(data); 
 
@@ -36,15 +45,22 @@ module.exports.calculateCost = (cb) => {
 
 }
 
+module.exports.getPointsFromDB = (clientId, cb) => {
+
+    db.getDataForClient(clientId, data => {
+        cb(getCoordinates(data));
+    });
+
+}
+
+
 function getCoordinates(dbData) {
-    // This function should parse data from db and return array like [[15.1111,11.1211], [15.1211,11.1311], [15.1411,11.1711]]
-    // Now only returns mock data
-    // TODO
-    return [[52.29100104733827,13.56445608335514], [52.45533040829523,13.46008596616764], [52.6498863653857,13.24310598569889]];
+    return dbData.map(obj => {
+        return obj.value.split('|')[0].split(',');
+    });
 }
 
 function matchRoute(data, cb) {
-        
     const gpxFile = prepareGpxFile(data);
     var target = 'http://rme.cit.api.here.com/2/matchroute.json?routemode=car&app_id=' + appId + '&app_code=' + appCode;
 
