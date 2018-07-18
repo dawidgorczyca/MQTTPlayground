@@ -40,6 +40,28 @@ class Window extends Component {
     let ui = window.H.ui.UI.createDefault(map, defaultLayers);
   };
 
+  askEndPoint() {
+    console.log("js works");
+  
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://localhost:8080/clients", true);
+    xhr.onload = function (e) {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          // polygon = xhr.responseText;
+          console.log( xhr.responseText );
+        } else {
+          console.error(xhr.statusText);
+        }
+      }
+    };
+    xhr.onerror = function (e) {
+      console.error(xhr.statusText);
+    };
+    xhr.send(null);
+  
+  }
+
   render() {
 
     return (
@@ -54,6 +76,7 @@ class Window extends Component {
           </tr>
           </tbody></table>
         <div id="map"/>
+        <button onClick={this.askEndPoint()}>click me</button>
       </div>
     );
   }
