@@ -19,7 +19,7 @@ const defaultState = {
   id: ''
 }
 
-const reducer = (state = defaultState, action) => {
+const driverReducer = (state = defaultState, action) => {
   switch(action.type) {
     case DRIVER_LOCATION:
       return update(state, {
@@ -34,4 +34,4 @@ const reducer = (state = defaultState, action) => {
   }
 }
 
-export default reducer
+export default driverReducer

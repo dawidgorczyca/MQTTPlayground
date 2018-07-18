@@ -1,9 +1,9 @@
 const mosca = require('mosca')
 
 const settings = {
-  port: 1883,
+  port: 1886,
   http: {
-    port: 1884,
+    port: 1887,
     bundle: true,
     static: './'
   }
