@@ -41,10 +41,11 @@ class Window extends Component {
   };
 
   render() {
+
     return (
       <div>
         <div>
-          Connection status: {this.props.status}
+          Connection status: <span className={this.props.status}>{this.props.status}</span>
         </div>
         <table><tbody>
           <tr>
