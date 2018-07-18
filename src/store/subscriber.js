@@ -4,7 +4,7 @@ import {msg} from './reducers/tracking.reducer'
 
 
 function subscribeMQTT() {
-  const client = mqtt.connect('mqtt://localhost:1884')
+  const client = mqtt.connect('mqtt://localhost:1884');
 
   client.on('connect', () => {
     client.subscribe('/Tracking/+')

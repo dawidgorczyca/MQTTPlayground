@@ -1,6 +1,6 @@
 import mqtt from 'mqtt'
 
-const BROKER_IP_ADDRESS = 'mqtt://10.0.45.139:1884';
+const BROKER_IP_ADDRESS = 'mqtt://mqtt.broker.gkasperski.usermd.net:1884';
 
 /**
  * Service to maintain mqtt events for drivers
@@ -15,14 +15,25 @@ export const MqttService = ( function () {
 
   /**
    * Send message via mqtt
-   * @param {string} message
+   * @param {Position} position
    */
   const sendPosition = position => {
-    console.log(position, 'sended');
-    client.publish('Tracking/Gps', `${position.coords.latitude},${position.coords.longitude}`);
+    console.log(`Sended Real GPS Position : ${position.coords.latitude},${position.coords.longitude}|${Date.now()}`);
+    client.publish('Tracking/d1', `${position.coords.latitude},${position.coords.longitude}|${Date.now()}`);
   };
 
+  /**
+   * Send mocked message via mqtt
+   * @param {string} latitude 
+   * @param {string} longitude 
+   */
+  const sendMockedPosition = (latitude, longitude) => {
+    console.log(`Sended Mocked GPS Position : ${latitude},${longitude}|${Date.now()}`);
+    client.publish('Tracking/d1', `${latitude},${longitude}|${Date.now()}`);
+  }
+
   return {
-    sendPosition
+    sendPosition,
+    sendMockedPosition
   };
 }() );

@@ -18,15 +18,16 @@ export const store = createStore(
   )
 )
 
-subscribeMQTT()
-
-const Dashboard = () => (
-  <Provider store={store}>
-  <div className="App">
-    gps track 
-  </div>
-  </Provider>
-);
+const Dashboard = () => {
+  subscribeMQTT();
+  return (
+    <Provider store={store}>
+    <div className="App">
+      gps track 
+    </div>
+    </Provider>
+  )
+};
 
  const App = () => (
   <Router>
