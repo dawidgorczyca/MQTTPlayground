@@ -6,9 +6,24 @@ const heremap = require('../helper/heremapHelper');
 
 module.exports.start = () => {
     
+    // Endpoint returns all clients that are in DB
+    app.get('/clients', (req, res) => {
+        db.getClients(data => {
+            return res.send(data);
+        });
+    });
+
     // Endpoint returns all objects from DB
     app.get('/points', (req, res) => {
         db.getAllData(data => {
+            return res.send(data);
+        });
+    });
+
+    // Endpoint returns all objects from DB for One Client
+    app.get('/pointsForClient/:clientId', (req, res) => {
+        const clientId = req.params.clientId;
+        db.getDataForClient(clientId, data => {
             return res.send(data);
         });
     });
