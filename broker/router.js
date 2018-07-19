@@ -51,6 +51,14 @@ module.exports.start = () => {
             return res.send(data);
         });
     });
+    
+    // Endpoint returns route after heremap matching as a string with WKT line (for one client)
+    app.get('/routeAfterMatching/:clientId', (req, res) => {
+        const clientId = req.params.clientId;
+        heremap.getRouteAfterMatching(clientId, data => {
+            return res.send(data);
+        });
+    });
 
     // Endpoint returns ONLY POINTS IN AREA after heremap matching for one client
     // Endpoint returns array of arrays like ["15.55929", "51.92393", 19.96, false]
@@ -68,6 +76,13 @@ module.exports.start = () => {
     app.get('/calculate/:clientId', (req, res) => {
         const clientId = req.params.clientId;
         heremap.calculateCost(clientId, data => {
+            return res.send(data);
+        });
+    });
+
+    // Endpoint returns paid area as WKT file string
+    app.get('/paidAreas', (req, res) => {
+        heremap.getPaidAreas(data => {
             return res.send(data);
         });
     });

@@ -1,5 +1,6 @@
 const db = require('./mongoHelper');
 var request = require('request');
+const fs = require('fs');
 const { buildGPX, GarminBuilder } = require('gpx-builder');
 const { Point } = GarminBuilder.MODELS;
 
@@ -16,6 +17,20 @@ module.exports.getPointsAfterMatching = (clientId, cb) => {
         matchRoute(coordinates, async (matchedRoute) => {
             const points = await getPointsInArea(matchedRoute);
             cb(points);
+        });
+    });
+
+}
+
+module.exports.getRouteAfterMatching = (clientId, cb) => {
+
+    db.getDataForClient(clientId, data => {
+
+        const coordinates = getCoordinates(data); 
+
+        matchRoute(coordinates, async (matchedRoute) => {
+            const points = await getPointsInArea(matchedRoute);
+            cb(prepareWktLine(points));
         });
     });
 
@@ -53,6 +68,16 @@ module.exports.getPointsFromDB = (clientId, cb) => {
 
 }
 
+
+module.exports.getPaidAreas = (cb) => {
+
+    fs.readFile('./scripts/defineHeremapArea/area.wkt', (err, data) => {
+        if (err) throw err;
+        const geometry = data.toString().split('\r\n')[1].split('\t')[3];
+        cb([geometry]);
+    });
+    
+}
 
 function getCoordinates(dbData) {
     return dbData.map(obj => {
@@ -170,4 +195,9 @@ function calculate(route) {
     cost = +parseFloat(cost).toFixed(2) || 0;
 
     return { wholeDistance, distanceInArea, cost };
+}
+
+function prepareWktLine(points) {
+    const stringPoints = points.map(point =>  point[0] + ' ' + point[1]);
+    return 'LINESTRING(' + stringPoints.join(',') + ')';
 }
