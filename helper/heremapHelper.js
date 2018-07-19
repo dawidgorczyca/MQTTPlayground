@@ -157,10 +157,11 @@ async function getPointsInArea(route) {
 
     const batchSize = 90;
     const numberOfRequests = Math.ceil(route.length / batchSize);
+    const mesureAccuracy = 1; // in meters
 
     for (let i = 0; i < numberOfRequests; i++) {
         let routeBatch = route.slice(i*batchSize, i*batchSize+batchSize);
-        let points = await checkPointsInArea(routeBatch, areasIds, 1);
+        let points = await checkPointsInArea(routeBatch, areasIds, mesureAccuracy);
         result = result.concat(points);
     }
 

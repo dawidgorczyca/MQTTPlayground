@@ -79,7 +79,7 @@ module.exports.start = () => {
         });
     });
 
-    // Endpoint returns paid area as WKT file string
+    // Endpoint returns paid areas as an array of WKT file strings
     app.get('/paidAreas', (req, res) => {
         heremap.getPaidAreas(data => {
             return res.send(data);
