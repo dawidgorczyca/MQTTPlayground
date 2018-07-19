@@ -18,12 +18,12 @@ const appReducer = combineReducers( {
   connection: connectionStatusReducer
 } );
 
-const rootReducer = ( state, action ) => {
-  return appReducer( state, action );
-};
+// const rootReducer = ( state, action ) => {
+//   return appReducer( state, action );
+// };
 
 export const store = createStore(
-  rootReducer,
+  appReducer,
   composeEnhancers(
     applyMiddleware(
       driversMiddleware

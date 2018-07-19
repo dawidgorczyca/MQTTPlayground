@@ -3,50 +3,61 @@ import { connect } from 'react-redux'
 import axios from 'axios';
 import './window.css'
 
-
+export let map = '';
 class Window extends Component {
 
   constructor( props ) {
     super( props );
     this.state = {
-      users: []
+      users: [],
+      paidAreas: '',
     };
 
     this.initializeMap = this.initializeMap.bind(this);
     this.downloadUsers = this.downloadUsers.bind(this);
+    this.downloadRouteById = this.downloadRouteById.bind(this);
   }
 
   componentDidMount(){
     this.downloadUsers();
+    this.downloadPaidAreas();
     this.initializeMap();
   }
 
   initializeMap(){
     //Step 1: initialize communication with the platform
-    let platform = new window.H.service.Platform({
+    const platform = new window.H.service.Platform({
       app_id: 'DemoAppId01082013GAL',
       app_code: 'AJKnXv84fjrb0KIHawS0Tg',
       useCIT: true,
       useHTTPS: false
     });
-    let pixelRatio = window.devicePixelRatio || 1;
-    let defaultLayers = platform.createDefaultLayers({
+    const pixelRatio = window.devicePixelRatio || 1;
+    const defaultLayers = platform.createDefaultLayers({
       tileSize: pixelRatio === 1 ? 256 : 512,
       ppi: pixelRatio === 1 ? undefined : 320
     });
 
     //Step 2: initialize a map  - not specificing a location will give a whole world view.
-    let map = new window.H.Map(document.getElementById('map'),
+    map = new window.H.Map(document.getElementById('map'),
       defaultLayers.normal.map, {pixelRatio: pixelRatio});
 
     //Step 3: make the map interactive
     // MapEvents enables the event system
     // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
-    let behavior = new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(map));
+    const behavior = new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(map));
 
     // Create the default UI components
-    let ui = window.H.ui.UI.createDefault(map, defaultLayers);
+    const ui = window.H.ui.UI.createDefault(map, defaultLayers);
+   
   };
+
+  addPolygons(){
+    this.state.paidAreas.forEach((area) => {
+      const geoPolygon = window.H.util.wkt.toGeometry(area);
+      map.addObject(new window.H.map.Polygon(geoPolygon));
+    })
+  }
 
   downloadUsers() {
     axios({
@@ -55,11 +66,36 @@ class Window extends Component {
     })
       .then(( response ) => {
         this.setState( { users: response.data } )
+    })
+  }
+
+  downloadPaidAreas() {
+    axios({
+      method:'get',
+      url:'http://localhost:8080/paidAreas',
+    })
+    .then(( response ) => {
+      this.setState( { paidAreas: response.data } )
+    })
+    .then(() => {
+      this.addPolygons();
     });
   }
 
-  render() {
+  downloadRouteById(id){
+    console.log(id);
+    console.log(typeof id);
+    axios({
+      method:'get',
+      url:`http://localhost:8080/routeAfterMatching/${id}`
+    })
+    .then(( response ) => {
+      console.log(response);
+    })
+  }
 
+  render() {
+    // this.downloadRouteById('d1');
     return (
       <div>
         <div>
@@ -73,7 +109,7 @@ class Window extends Component {
           {this.state.users.map((el) => (
             <tr key={el}>
               <td>{el}</td>
-              <td><button>test</button></td>
+              <td><button onClick={() => this.downloadRouteById(el) }>test</button></td>
             </tr>
           ))}
           </tbody></table>
