@@ -52,7 +52,7 @@ module.exports.start = () => {
         });
     });
     
-    // Endpoint returns route after heremap matching as a string with WKT line (for one client)
+    // Endpoint returns route after heremap matching as a string with WKT LINESTRING (for one client)
     app.get('/routeAfterMatching/:clientId', (req, res) => {
         const clientId = req.params.clientId;
         heremap.getRouteAfterMatching(clientId, data => {
@@ -61,8 +61,7 @@ module.exports.start = () => {
     });
 
     // Endpoint returns ONLY POINTS IN AREA after heremap matching for one client
-    // Endpoint returns array of arrays like ["15.55929", "51.92393", 19.96, false]
-    // which means [Longitude, Latitude, Distance of link between points, is this point in paid area]
+    // Endpoint returns array of arrays like ["15.55929", "51.92393"] which means [Longitude, Latitude]
     app.get('/pointsInArea/:clientId', (req, res) => {
         const clientId = req.params.clientId;
         heremap.getPointsInArea(clientId, data => {
