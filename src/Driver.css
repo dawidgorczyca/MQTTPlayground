@@ -1,5 +1,22 @@
 .driver-main {
-  text-align: center; }
+  text-align: center;
+  padding: 20px; }
+
+div + div {
+  padding: 10px; }
+
+.counter {
+  font-size: 18px;
+  font-weight: 600; }
+
+.status {
+  color: white;
+  padding: 5px;
+  border-radius: 50px; }
+  .status.inactive {
+    background-color: red; }
+  .status.active {
+    background-color: green; }
 
 .btn {
   padding: 10px 20px;
