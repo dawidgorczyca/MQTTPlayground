@@ -64,7 +64,10 @@ module.exports.calculateCost = (clientId, cb) => {
 module.exports.getPointsFromDB = (clientId, cb) => {
 
     db.getDataForClient(clientId, data => {
-        cb(getCoordinates(data));
+        const coordinates = getCoordinates(data).map(point => {
+            return {lat: point[0], lng: point[1]};
+        });
+        cb(coordinates);
     });
 
 }

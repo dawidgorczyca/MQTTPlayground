@@ -34,6 +34,7 @@ module.exports.start = () => {
 
 
     // Endpoint returns all points from DB for one client (points collected by driver)
+    // Endpoint returns array of objects like {"lat": "51.935365", "lng": "15.491919"}
     app.get('/points/:clientId', (req, res) => {
         const clientId = req.params.clientId;
         heremap.getPointsFromDB(clientId, data => {
