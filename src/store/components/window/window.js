@@ -103,8 +103,17 @@ class Window extends Component {
       this.setState( { choosedRoute: response.data } )
     })
     .then(() => {
+      this.deleteRouteOnMap();
       this.addRoute();
     });
+  }
+
+  deleteRouteOnMap(){
+
+     map.getObjects().forEach((el)=>{
+      if(el.constructor.name === 'pg')
+        map.removeObject(el);
+    })
   }
 
   render() {
@@ -121,12 +130,13 @@ class Window extends Component {
           {this.state.users.map((el) => (
             <tr key={el}>
               <td>{el}</td>
-              <td><button onClick={() => this.downloadRouteById(el) }>test</button></td>
+              <td><button onClick={() => this.downloadRouteById(el) }>Show this OBU</button></td>
             </tr>
           ))}
           </tbody></table>
         <div id="map"/>
         <button onClick={this.zoomZielonaGora}>Zoom to Zielona Góra</button>
+        {/* <button onClick={this.getObject}>test</button> */}
       </div>
     );
   }
