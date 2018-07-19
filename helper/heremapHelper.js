@@ -142,7 +142,10 @@ function parseHeremapMatchingResponse(data) {
 }
 
 function prepareGpxFile(data) {
-    const points = data.map(coordinates => {
+
+    const properData = data.filter(data => (data[0] !== 'undefined') && (data[1] !== 'undefined'));
+
+    const points = properData.map(coordinates => {
         return new Point(coordinates[0], coordinates[1])
     });
      
