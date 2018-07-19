@@ -1,15 +1,23 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import axios from 'axios';
 import './window.css'
 
 
 class Window extends Component {
 
-  // constructor( props ) {
-  //   super( props );
-  // }
+  constructor( props ) {
+    super( props );
+    this.state = {
+      users: []
+    };
+
+    this.initializeMap = this.initializeMap.bind(this);
+    this.downloadUsers = this.downloadUsers.bind(this);
+  }
 
   componentDidMount(){
+    this.downloadUsers();
     this.initializeMap();
   }
 
@@ -40,26 +48,14 @@ class Window extends Component {
     let ui = window.H.ui.UI.createDefault(map, defaultLayers);
   };
 
-  askEndPoint() {
-    console.log("js works");
-  
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "http://localhost:8080/clients", true);
-    xhr.onload = function (e) {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          // polygon = xhr.responseText;
-          console.log( xhr.responseText );
-        } else {
-          console.error(xhr.statusText);
-        }
-      }
-    };
-    xhr.onerror = function (e) {
-      console.error(xhr.statusText);
-    };
-    xhr.send(null);
-  
+  downloadUsers() {
+    axios({
+      method:'get',
+      url:'http://localhost:8080/clients',
+    })
+      .then(( response ) => {
+        this.setState( { users: response.data } )
+    });
   }
 
   render() {
@@ -74,9 +70,15 @@ class Window extends Component {
             <th>NAME/ID</th>
             <th></th>
           </tr>
+          {this.state.users.map((el) => (
+            <tr key={el}>
+              <td>{el}</td>
+              <td><button>test</button></td>
+            </tr>
+          ))}
           </tbody></table>
         <div id="map"/>
-        <button onClick={this.askEndPoint()}>click me</button>
+        <button onClick={this.downloadUsers}>click me</button>
       </div>
     );
   }
