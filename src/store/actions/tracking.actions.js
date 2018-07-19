@@ -1,4 +1,4 @@
-import { MESSAGE, ADD_DRIVER, REMOVE_DRIVER } from "../action.types";
+import { MESSAGE, ADD_DRIVER, REMOVE_DRIVER, FETCH_AREA_POINTS, AREA_POINTS_HAVE_BEEN_FETCHED } from "../action.types";
 
 export const newMessageHasBeenReceived = (receivedMsg, sender) => ({
   type: MESSAGE,
@@ -14,4 +14,14 @@ export const addDriver = driver => ({
 export const removeDriver = driver => ({
   type: REMOVE_DRIVER,
   driver
+});
+
+export const fetchAreaPointsForDriver = driver => ({
+  type: FETCH_AREA_POINTS,
+  driver
+});
+
+export const areaPointsForDriverHaveBeenFetched = areaPoints => ({
+  type: AREA_POINTS_HAVE_BEEN_FETCHED,
+  areaPoints
 });

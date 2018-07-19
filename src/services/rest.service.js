@@ -1,4 +1,4 @@
-export const driversData = (() => {
+export const restService = (() => {
   const API_ADDRESS = "http://localhost:8080";
 
   const headers = {
