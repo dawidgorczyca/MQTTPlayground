@@ -22,3 +22,4 @@ function uploadNewGeofence(filePath, geofenceId) {
 }
 
 uploadNewGeofence('./scripts/defineHeremapArea/area.wkt', 5);
+uploadNewGeofence('./scripts/defineHeremapArea/area2.wkt', 6);
