@@ -1,0 +1,43 @@
+.driver-main {
+    text-align: center;
+    padding: 20px;
+}
+
+div+div {
+    padding: 10px;
+}
+
+.counter {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+.status {
+    color: white;
+    padding: 5px;
+    border-radius: 50px;
+
+    &.inactive {
+        background-color: red;
+    }
+
+    &.active {
+        background-color: green;
+    }
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    background-color: #333333fb;
+    border: 1px solid white;
+    
+    &.inactive {
+        background-color: #333333fb;
+    }
+
+    &.active {
+        background-color: darken(red, 15%) !important;
+    }
+}
