@@ -1,11 +1,12 @@
 const db = require('./mongoHelper');
-var request = require('request');
+const request = require('request');
 const fs = require('fs');
 const { buildGPX, GarminBuilder } = require('gpx-builder');
 const { Point } = GarminBuilder.MODELS;
 
-var appId = 'txpoz50GfMuyShPMF5I2';
-var appCode = 'nN57_wL6Z_SpALh5sgKoMg';
+const appId = 'txpoz50GfMuyShPMF5I2';
+const appCode = 'nN57_wL6Z_SpALh5sgKoMg';
+const areasIds = '5,6';
 
 
 module.exports.getPointsAfterMatching = (clientId, cb) => {
@@ -71,11 +72,25 @@ module.exports.getPointsFromDB = (clientId, cb) => {
 
 module.exports.getPaidAreas = (cb) => {
 
-    fs.readFile('./scripts/defineHeremapArea/area.wkt', (err, data) => {
-        if (err) throw err;
-        const geometry = data.toString().split('\r\n')[1].split('\t')[3];
-        cb([geometry]);
-    });
+    const result = [];
+    const dirname = './scripts/defineHeremapArea/';
+
+    fs.readdir(dirname, function(err, filenames) {
+
+        const files = filenames.filter(file => file.slice(file.length-4) === '.wkt');
+        files.forEach(function(filename, index) {
+
+            fs.readFile(dirname + filename, 'utf-8', function(err, data) {
+                const geometry = data.toString().split('\r\n')[1].split('\t')[3];
+                result.push(geometry);
+                if (index === files.length-1) {
+                    cb(result);
+                }
+            });
+
+        });
+
+      });
     
 }
 
@@ -127,7 +142,10 @@ function parseHeremapMatchingResponse(data) {
 }
 
 function prepareGpxFile(data) {
-    const points = data.map(coordinates => {
+
+    const properData = data.filter(data => (data[0] !== 'undefined') && (data[1] !== 'undefined'));
+
+    const points = properData.map(coordinates => {
         return new Point(coordinates[0], coordinates[1])
     });
      
@@ -142,10 +160,11 @@ async function getPointsInArea(route) {
 
     const batchSize = 90;
     const numberOfRequests = Math.ceil(route.length / batchSize);
+    const mesureAccuracy = 1; // in meters
 
     for (let i = 0; i < numberOfRequests; i++) {
         let routeBatch = route.slice(i*batchSize, i*batchSize+batchSize);
-        let points = await checkPointsInArea(routeBatch, 5, 50);
+        let points = await checkPointsInArea(routeBatch, areasIds, mesureAccuracy);
         result = result.concat(points);
     }
 
