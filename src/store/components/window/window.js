@@ -11,6 +11,7 @@ class Window extends Component {
     this.state = {
       users: [],
       paidAreas: '',
+      choosedRoute: ''
     };
 
     this.initializeMap = this.initializeMap.bind(this);
@@ -58,6 +59,17 @@ class Window extends Component {
       map.addObject(new window.H.map.Polygon(geoPolygon));
     })
   }
+  addRoute(){
+    const geoLine = window.H.util.wkt.toGeometry(this.state.choosedRoute);
+    map.addObject(new window.H.map.Polyline(
+      geoLine, { style: { lineWidth: 4, strokeColor: "red"  }}
+    ));
+  }
+
+  zoomZielonaGora(){
+    map.setCenter({lat:51.96300052623031, lng:15.453757994384773});
+    map.setZoom(14);
+  }
 
   downloadUsers() {
     axios({
@@ -83,19 +95,19 @@ class Window extends Component {
   }
 
   downloadRouteById(id){
-    console.log(id);
-    console.log(typeof id);
     axios({
       method:'get',
       url:`http://localhost:8080/routeAfterMatching/${id}`
     })
     .then(( response ) => {
-      console.log(response);
+      this.setState( { choosedRoute: response.data } )
     })
+    .then(() => {
+      this.addRoute();
+    });
   }
 
   render() {
-    // this.downloadRouteById('d1');
     return (
       <div>
         <div>
@@ -114,7 +126,7 @@ class Window extends Component {
           ))}
           </tbody></table>
         <div id="map"/>
-        <button onClick={this.downloadUsers}>click me</button>
+        <button onClick={this.zoomZielonaGora}>Zoom to Zielona Góra</button>
       </div>
     );
   }
