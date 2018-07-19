@@ -14,6 +14,7 @@ class Driver extends React.Component {
       hasDriverStarted: false,
       driverId: "",
       connected: false,
+      sentEvents: 0,
     };
     this.timeouts = [];
   }
@@ -41,7 +42,9 @@ class Driver extends React.Component {
       navigator.geolocation.getCurrentPosition(
         position =>
           (this.sendPositionInterval = setInterval(
-            MqttService.sendPosition,
+            (...props) => 
+            MqttService.sendPosition(...props).then(() => 
+              this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
             SENDING_GPS_GAP * 1000,
             position,
             this.state.driverId
@@ -56,7 +59,9 @@ class Driver extends React.Component {
     mockedGpsLocations.forEach(
       (location, index) =>
         (this.timeouts[index] = setTimeout(
-          MqttService.sendMockedPosition,
+          (...props) => 
+            MqttService.sendMockedPosition(...props).then(() => 
+              this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
           index * interval,
           location.latitude,
           location.longitude,
@@ -70,7 +75,7 @@ class Driver extends React.Component {
     this.timeouts.forEach(t => clearTimeout(t));
   };
 
-  handleGpsGatheringButton = e => {
+  handleGpsGatheringButton = () => {
     this.setState(
       prevState => ({ hasDriverStarted: !prevState.hasDriverStarted }),
       () => this.handleDriverStartedStateChange(this.state.hasDriverStarted)
@@ -86,6 +91,7 @@ class Driver extends React.Component {
             className={
               "status" + (this.state.connected ? " active" : " inactive")
             }
+            
           >
             {this.state.connected ? "ONLINE" : "OFFLINE"}
           </span>
@@ -118,6 +124,7 @@ class Driver extends React.Component {
           }
           onClick={() => this.handleGpsGatheringButton()}
         />
+        <div className="counter">Sent events: {this.state.sentEvents}</div>
       </div>
     );
   };
