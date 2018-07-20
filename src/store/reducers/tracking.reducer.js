@@ -1,8 +1,8 @@
 import update from 'immutability-helper'
 import driverReducer from './driver.reducer'
 
-const ADD_DRIVER = 'tracking/ADD'
-const REMOVE_DRIVER = 'tracking/REMOVE_DRIVER'
+export const ADD_DRIVER = 'tracking/ADD'
+export const REMOVE_DRIVER = 'tracking/REMOVE_DRIVER'
 export const MESSAGE = 'tracking/MSG'
 
 export const msg = (recieved_msg, sender) => ({

@@ -1,5 +1,5 @@
 import mqtt from 'mqtt'
-import {store} from '../App'
+import {store} from '../containers/dashboard.container'
 import {msg} from './reducers/tracking.reducer'
 import {connectionStatus} from './reducers/connectionStatus.reducer'
 
@@ -17,7 +17,6 @@ function subscribeMQTT() {
     client.subscribe('/Tracking/+')
   })
   client.on('message', (topic, message) => {
-    console.log(topic, message)
     store.dispatch(msg(message.toString(), topic.split('/')[2]))
   })
 }

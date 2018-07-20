@@ -1,8 +1,13 @@
-import { MESSAGE, addDriver } from '../reducers/tracking.reducer'
+import {
+  MESSAGE,
+  addDriver,
+  ADD_DRIVER
+} from '../reducers/tracking.reducer'
 import { driverLocation } from '../reducers/driver.reducer'
+import { axiosRouteById } from '../actions/axios.actions'
 
-function findExistingDriver(driver, list) {
-  return list.findIndex(x => x.id === driver)
+export function findExistingDriver(driver, list, attrName) {
+  return list.findIndex(x => x[attrName] === driver)
 }
 
 function prepareLocationInfo(msg) {
@@ -14,7 +19,7 @@ export default store => next => action => {
 
     const currentState = store.getState().tracking;
 
-    const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers) : undefined
+    const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers, 'id') : undefined
     const msg = prepareLocationInfo(action.recieved_msg)
     const loc = {
       loc: msg[0],
@@ -29,6 +34,11 @@ export default store => next => action => {
     } else {
       store.dispatch(driverLocation(loc, existing))
     }
+  }
+  if(action.type === ADD_DRIVER){
+    setInterval(() => {
+      store.dispatch(axiosRouteById(action.driver.id))
+    }, 3000)
   }
   next(action)
 }

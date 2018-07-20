@@ -1,6 +1,6 @@
-import objectAssign from 'object-assign';
+import objectAssign from 'object-assign'
 
-const CONNECTION_STATUS = 'connection/status';
+const CONNECTION_STATUS = 'connection/status'
 
 export const connectionStatus = (status) => ({
   type: CONNECTION_STATUS,
