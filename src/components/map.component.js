@@ -49,9 +49,13 @@ class MapComponent extends Component {
     if(newProps.fences && newProps.fences !== fences) {
       this.addPolygons(newProps.fences)
     }
-    if(newProps.drivers && newProps.drivers.length !== drivers.length) {
-      this.handleRoutes(newProps.routes)
-    }
+
+    newProps.drivers.forEach((newDriver, index)=>{
+      if( newProps.routes && drivers.length === 0 || newDriver.locations.length !== drivers[index].locations.length) {
+        this.handleRoutes(newProps.routes)
+      }
+    })
+
   }
 
   componentWillUnmount() {
@@ -71,9 +75,9 @@ class MapComponent extends Component {
       map.addObject(new window.H.map.Polygon(geoPolygon));
     })
   }
-  addRoute(){
+  addRoute(route){
     console.log('draw route')
-    const geoLine = window.H.util.wkt.toGeometry(this.state.choosedRoute);
+    const geoLine = window.H.util.wkt.toGeometry(route);
     map.addObject(new window.H.map.Polyline(
       geoLine, { style: { lineWidth: 4, strokeColor: "red"  }}
     ));
@@ -83,19 +87,19 @@ class MapComponent extends Component {
     map.setZoom(14);
   }
 
-  downloadRouteById(id){
-    axios({
-      method:'get',
-      url:`http://localhost:8080/routeAfterMatching/${id}`
-    })
-    .then(( response ) => {
-      this.setState( { choosedRoute: response.data } )
-    })
-    .then(() => {
-      this.deleteRouteOnMap();
-      this.addRoute();
-    });
-  }
+  // downloadRouteById(id){
+  //   axios({
+  //     method:'get',
+  //     url:`http://localhost:8080/routeAfterMatching/${id}`
+  //   })
+  //   .then(( response ) => {
+  //     this.setState( { choosedRoute: response.data } )
+  //   })
+  //   .then(() => {
+  //     this.deleteRouteOnMap();
+  //     this.addRoute();
+  //   });
+  // }
 
   deleteRouteOnMap(){
      map.getObjects().forEach((el)=>{
