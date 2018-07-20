@@ -53,7 +53,7 @@ module.exports.getClients = (cb) => {
     this.getAllData(data => {
 
         data.forEach(obj => {
-            client = obj.topic.match(/^\/Tracking\/(\S+)$/)[1] || null;
+            client = obj.topic.match(/^\/Tracking\/(.+)$/)[1] || null;
             if (clients.indexOf(client) === -1) {
                 clients.push(client);
             }

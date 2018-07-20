@@ -107,31 +107,33 @@ function parseHeremapMatchingResponse(data) {
     let point;
     let result = [];
 
-    data.RouteLinks.forEach((oneLine, index) => {
+    if (data.RouteLinks && data.RouteLinks.length) {
+        data.RouteLinks.forEach((oneLine, index) => {
 
-        var coordinates = oneLine.shape.split(' ');
-        if (index === 0) {
-            point = [coordinates[1], coordinates[0], 0];
-            result.push(point);
-        }
-
-        for (let i = 2; i < coordinates.length; i = i+2) {
-            point = [coordinates[i+1], coordinates[i]];
-            if (i === (coordinates.length - 2)) {
-                point[2] = +parseFloat(oneLine.linkLength).toFixed(2);
-            } else {
-                point[2] = 0;
+            var coordinates = oneLine.shape.split(' ');
+            if (index === 0) {
+                point = [coordinates[1], coordinates[0], 0];
+                result.push(point);
             }
-            result.push(point);
-        }
-    });
+
+            for (let i = 2; i < coordinates.length; i = i+2) {
+                point = [coordinates[i+1], coordinates[i]];
+                if (i === (coordinates.length - 2)) {
+                    point[2] = +parseFloat(oneLine.linkLength).toFixed(2);
+                } else {
+                    point[2] = 0;
+                }
+                result.push(point);
+            }
+        });
+    }
 
     return result;
 }
 
 function prepareGpxFile(data) {
 
-    const properData = data.filter(data => (data[0] !== 'undefined') && (data[1] !== 'undefined'));
+    const properData = data.filter(data => !!parseFloat(data[0]));
 
     const points = properData.map(coordinates => {
         return new Point(coordinates[0], coordinates[1])
@@ -206,7 +208,7 @@ function calculate(route) {
 
 function prepareWktLine(points) {
     const stringPoints = points.map(point =>  point[0] + ' ' + point[1]);
-    return 'LINESTRING(' + stringPoints.join(',') + ')';
+    return stringPoints.length ? 'LINESTRING(' + stringPoints.join(',') + ')' : '';
 }
 
 function gerAreaFromFile(dir) {
