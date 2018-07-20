@@ -55,7 +55,6 @@ class MapComponent extends Component {
         this.handleRoutes(newProps.routes)
       }
     })
-
   }
 
   componentWillUnmount() {
@@ -129,6 +128,7 @@ class MapComponent extends Component {
         <div id="map"/>
         <button onClick={() => this.zoomSomewhere({lat:51.96300052623031, lng:15.453757994384773})}>Zoom to Zielona Góra</button>
         <button onClick={() => this.zoomSomewhere({lat:48.07788339260274, lng:8.45672405609298})}>Zoom somewhere</button>
+        <button onClick={this.deleteRouteOnMap}>Clear map</button>
       </div>
     );
   }
