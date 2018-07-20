@@ -1,15 +1,17 @@
 const db = require('./mongoHelper');
-var request = require('request');
+const request = require('request');
+const fs = require('fs');
 const { buildGPX, GarminBuilder } = require('gpx-builder');
 const { Point } = GarminBuilder.MODELS;
 
-var appId = 'txpoz50GfMuyShPMF5I2';
-var appCode = 'nN57_wL6Z_SpALh5sgKoMg';
+const appId = 'txpoz50GfMuyShPMF5I2';
+const appCode = 'nN57_wL6Z_SpALh5sgKoMg';
+const areasIds = '5,6';
 
 
-module.exports.getAllPoints = (cb) => {
+module.exports.getPointsAfterMatching = (clientId, cb) => {
 
-    db.getAllData(data => {
+    db.getDataForClient(clientId, data => {
 
         const coordinates = getCoordinates(data); 
 
@@ -21,9 +23,32 @@ module.exports.getAllPoints = (cb) => {
 
 }
 
-module.exports.calculateCost = (cb) => {
+module.exports.getRouteAfterMatching = (clientId, cb) => {
 
-    db.getAllData(data => {
+    db.getDataForClient(clientId, data => {
+
+        const coordinates = getCoordinates(data); 
+
+        matchRoute(coordinates, async (matchedRoute) => {
+            const points = await getPointsInArea(matchedRoute);
+            cb(prepareWktLine(points));
+        });
+    });
+
+}
+
+module.exports.getPointsInArea = (clientId, cb) => {
+
+    this.getPointsAfterMatching(clientId, data => {
+        const pointsInArea = data.filter(obj => obj[3]).map(obj => obj.slice(0, 2));
+        cb(pointsInArea);
+    });
+
+}
+
+module.exports.calculateCost = (clientId, cb) => {
+
+    db.getDataForClient(clientId, data => {
 
         const coordinates = getCoordinates(data); 
 
@@ -36,15 +61,49 @@ module.exports.calculateCost = (cb) => {
 
 }
 
+module.exports.getPointsFromDB = (clientId, cb) => {
+
+    db.getDataForClient(clientId, data => {
+        const coordinates = getCoordinates(data).map(point => {
+            return {lat: point[0], lng: point[1]};
+        });
+        cb(coordinates);
+    });
+
+}
+
+
+module.exports.getPaidAreas = (cb) => {
+
+    const result = [];
+    const dirname = './scripts/defineHeremapArea/';
+
+    fs.readdir(dirname, function(err, filenames) {
+
+        const files = filenames.filter(file => file.slice(file.length-4) === '.wkt');
+        files.forEach(function(filename, index) {
+
+            fs.readFile(dirname + filename, 'utf-8', function(err, data) {
+                const geometry = data.toString().split('\r\n')[1].split('\t')[3];
+                result.push(geometry);
+                if (index === files.length-1) {
+                    cb(result);
+                }
+            });
+
+        });
+
+      });
+    
+}
+
 function getCoordinates(dbData) {
-    // This function should parse data from db and return array like [[15.1111,11.1211], [15.1211,11.1311], [15.1411,11.1711]]
-    // Now only returns mock data
-    // TODO
-    return [[52.29100104733827,13.56445608335514], [52.45533040829523,13.46008596616764], [52.6498863653857,13.24310598569889]];
+    return dbData.map(obj => {
+        return obj.value.split('|')[0].split(',');
+    });
 }
 
 function matchRoute(data, cb) {
-        
     const gpxFile = prepareGpxFile(data);
     var target = 'http://rme.cit.api.here.com/2/matchroute.json?routemode=car&app_id=' + appId + '&app_code=' + appCode;
 
@@ -86,7 +145,10 @@ function parseHeremapMatchingResponse(data) {
 }
 
 function prepareGpxFile(data) {
-    const points = data.map(coordinates => {
+
+    const properData = data.filter(data => (data[0] !== 'undefined') && (data[1] !== 'undefined'));
+
+    const points = properData.map(coordinates => {
         return new Point(coordinates[0], coordinates[1])
     });
      
@@ -101,10 +163,11 @@ async function getPointsInArea(route) {
 
     const batchSize = 90;
     const numberOfRequests = Math.ceil(route.length / batchSize);
+    const mesureAccuracy = 1; // in meters
 
     for (let i = 0; i < numberOfRequests; i++) {
         let routeBatch = route.slice(i*batchSize, i*batchSize+batchSize);
-        let points = await checkPointsInArea(routeBatch, 5, 50);
+        let points = await checkPointsInArea(routeBatch, areasIds, mesureAccuracy);
         result = result.concat(points);
     }
 
@@ -154,4 +217,9 @@ function calculate(route) {
     cost = +parseFloat(cost).toFixed(2) || 0;
 
     return { wholeDistance, distanceInArea, cost };
+}
+
+function prepareWktLine(points) {
+    const stringPoints = points.map(point =>  point[0] + ' ' + point[1]);
+    return 'LINESTRING(' + stringPoints.join(',') + ')';
 }

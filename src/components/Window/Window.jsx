@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios';
 import './Window.scss'
+import GpsDataTable from '../GpsDataTable/GpsDataTable';
 
 
 class Window extends Component {
@@ -79,6 +80,7 @@ class Window extends Component {
           </tbody></table>
         <div id="map"/>
         <button onClick={this.downloadUsers}>click me</button>
+        <GpsDataTable/>
       </div>
     );
   }

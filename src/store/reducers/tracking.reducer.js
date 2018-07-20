@@ -1,6 +1,6 @@
 import update from "immutability-helper";
 import driverReducer from "./driver.reducer";
-import { ADD_DRIVER, REMOVE_DRIVER } from "../action.types";
+import { ADD_DRIVER, REMOVE_DRIVER, AREA_POINTS_HAVE_BEEN_FETCHED } from "../action.types";
 
 const defaultState = {
   drivers: []
@@ -26,6 +26,11 @@ const trackingReducer = (state = defaultState, action) => {
     case REMOVE_DRIVER:
       return update(state, {
         drivers: { $push: [action.driver] }
+      });
+    case AREA_POINTS_HAVE_BEEN_FETCHED:
+      console.log(action);
+      return update(state, {
+        points: { $set: action.payload }
       });
     default:
       return state;

@@ -21,7 +21,7 @@ export const fetchAreaPointsForDriver = driver => ({
   driver
 });
 
-export const areaPointsForDriverHaveBeenFetched = areaPoints => ({
+export const areaPointsHaveBeenFetched = payload => ({
   type: AREA_POINTS_HAVE_BEEN_FETCHED,
-  areaPoints
+  payload
 });

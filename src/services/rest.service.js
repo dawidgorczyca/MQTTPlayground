@@ -13,7 +13,7 @@ export const restService = (() => {
         headers
       }).then(
         response => resolve(response.json()),
-        error => reject(error.json())
+        error => reject(error)
       );
     });
 
@@ -25,7 +25,7 @@ export const restService = (() => {
         body: JSON.stringify(body)
       }).then(
         response => resolve(response.json()),
-        error => reject(error.json())
+        error => reject(error)
       );
     });
 
@@ -37,7 +37,7 @@ export const restService = (() => {
         body: JSON.stringify(body)
       }).then(
         response => resolve(response.json()),
-        error => reject(error.json())
+        error => reject(error)
       );
     });
 
@@ -48,7 +48,7 @@ export const restService = (() => {
         headers
       }).then(
         response => resolve(response.json()),
-        error => reject(error.json())
+        error => reject(error)
       );
     });
 
