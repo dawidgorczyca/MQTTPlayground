@@ -2,7 +2,7 @@ import mqtt from "mqtt";
 import { resolve } from "url";
 import { rejects } from "assert";
 
-const BROKER_IP_ADDRESS = "mqtt://mqtt.broker.gkasperski.usermd.net:1884";
+const BROKER_IP_ADDRESS = "mqtt://localhost:1887";
 
 /**
  * Service to maintain mqtt events for drivers

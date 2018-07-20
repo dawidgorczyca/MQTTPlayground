@@ -15,17 +15,20 @@ export default store => next => action => {
     const currentState = store.getState().tracking;
 
     const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers) : undefined
-
     const msg = prepareLocationInfo(action.recieved_msg)
     const loc = {
       loc: msg[0],
       time: msg[1]
     }
     
-    existing ? store.dispatch(addDriver({
-      id: action.sender,
-      locations: [loc]
-    })) : store.dispatch(driverLocation(loc, existing))
+    if(existing === -1){
+      store.dispatch(addDriver({
+        id: action.sender,
+        locations: [loc]
+      }))
+    } else {
+      store.dispatch(driverLocation(loc, existing))
+    }
   }
   next(action)
 }

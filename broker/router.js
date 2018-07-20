@@ -5,7 +5,7 @@ require('dotenv-safe').config();
 const db = require('../helper/mongoHelper');
 const heremap = require('../helper/heremapHelper');
 
-module.exports.start = () => {
+function start(){
     
     app.use(cors());
 
@@ -90,3 +90,5 @@ module.exports.start = () => {
     app.listen(8080, () => console.log('REST API listening on port 8080.'));
 
 };
+
+start();

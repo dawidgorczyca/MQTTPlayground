@@ -25,6 +25,10 @@ class Window extends Component {
     this.initializeMap();
   }
 
+  testFunc() {
+    console.log(this.props.drivers)
+  }
+
   initializeMap(){
     //Step 1: initialize communication with the platform
     const platform = new window.H.service.Platform({
@@ -54,12 +58,14 @@ class Window extends Component {
   };
 
   addPolygons(){
+    console.log('polygons')
     this.state.paidAreas.forEach((area) => {
       const geoPolygon = window.H.util.wkt.toGeometry(area);
       map.addObject(new window.H.map.Polygon(geoPolygon));
     })
   }
   addRoute(){
+    console.log('addRoute')
     const geoLine = window.H.util.wkt.toGeometry(this.state.choosedRoute);
     map.addObject(new window.H.map.Polyline(
       geoLine, { style: { lineWidth: 4, strokeColor: "red"  }}
@@ -77,6 +83,7 @@ class Window extends Component {
       url:'http://localhost:8080/clients',
     })
       .then(( response ) => {
+        console.log('clients', response.data)
         this.setState( { users: response.data } )
     })
   }
@@ -87,6 +94,7 @@ class Window extends Component {
       url:'http://localhost:8080/paidAreas',
     })
     .then(( response ) => {
+      console.log('paidAreas', response.data)
       this.setState( { paidAreas: response.data } )
     })
     .then(() => {
@@ -95,11 +103,13 @@ class Window extends Component {
   }
 
   downloadRouteById(id){
+    console.log('downloadRouteById', id)
     axios({
       method:'get',
       url:`http://localhost:8080/routeAfterMatching/${id}`
     })
     .then(( response ) => {
+      console.log('routeAfterMatching', response.data)
       this.setState( { choosedRoute: response.data } )
     })
     .then(() => {
@@ -109,7 +119,6 @@ class Window extends Component {
   }
 
   deleteRouteOnMap(){
-
      map.getObjects().forEach((el)=>{
       if(el.constructor.name === 'pg')
         map.removeObject(el);
@@ -117,6 +126,7 @@ class Window extends Component {
   }
 
   render() {
+    const { drivers } = this.props
     return (
       <div>
         <div>
@@ -127,16 +137,16 @@ class Window extends Component {
             <th>NAME/ID</th>
             <th></th>
           </tr>
-          {this.state.users.map((el) => (
-            <tr key={el}>
-              <td>{el}</td>
-              <td><button onClick={() => this.downloadRouteById(el) }>Show this OBU</button></td>
+          {drivers.map((el) => (
+            <tr key={el.id}>
+              <td>{el.id}</td>
+              <td><button onClick={() => this.downloadRouteById(el.id) }>Show this OBU</button></td>
             </tr>
           ))}
           </tbody></table>
         <div id="map"/>
         <button onClick={this.zoomZielonaGora}>Zoom to Zielona Góra</button>
-        {/* <button onClick={this.getObject}>test</button> */}
+        <button onClick={() => this.testFunc()}>test</button>
       </div>
     );
   }

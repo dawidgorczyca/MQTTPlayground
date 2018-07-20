@@ -25,7 +25,7 @@ module.exports.getAllData = (cb) => {
 
 module.exports.getDataForClient = (clientId, cb) => {
     const dbUrl = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-    const dbUser = process.env.DB_USER;
+    const dbUser = process.env.DB_NAME;
     const dbMainCollection = process.env.DB_MAIN_COLLECTION;
 
     MongoClient.connect(dbUrl, { useNewUrlParser: true }, (err, client) => {
@@ -33,8 +33,8 @@ module.exports.getDataForClient = (clientId, cb) => {
 
         const db = client.db(dbUser);
         const collection = db.collection(dbMainCollection);
-
-        collection.find({topic: {'$regex': `^/Tracking/${clientId}$`}}).toArray((err, docs) => {
+        const clientTopic = `/Tracking/${clientId}`
+        collection.find({topic: {'$regex': `^${clientTopic}$`}}).toArray((err, docs) => {
             docs = docs.map(doc => {
                 doc.value = doc.value.toString();
                 return doc;

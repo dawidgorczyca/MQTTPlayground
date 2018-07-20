@@ -10,7 +10,6 @@ const areasIds = '5,6';
 
 
 module.exports.getPointsAfterMatching = (clientId, cb) => {
-
     db.getDataForClient(clientId, data => {
 
         const coordinates = getCoordinates(data); 
@@ -24,9 +23,7 @@ module.exports.getPointsAfterMatching = (clientId, cb) => {
 }
 
 module.exports.getRouteAfterMatching = (clientId, cb) => {
-
     db.getDataForClient(clientId, data => {
-
         const coordinates = getCoordinates(data); 
 
         matchRoute(coordinates, async (matchedRoute) => {
@@ -84,7 +81,7 @@ module.exports.getPaidAreas = (cb) => {
         files.forEach(function(filename, index) {
 
             fs.readFile(dirname + filename, 'utf-8', function(err, data) {
-                const geometry = data.toString().split('\r\n')[1].split('\t')[3];
+                const geometry = data.toString().split('\n')[1].split('\t')[3];
                 result.push(geometry);
                 if (index === files.length-1) {
                     cb(result);

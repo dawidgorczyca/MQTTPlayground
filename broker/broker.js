@@ -50,5 +50,3 @@ server.on('clientDisconnected', function(client) {
 server.on('published', function(packet, client) {
   console.log('Published', packet);
 });
-
-require('./router').start();

@@ -5,7 +5,7 @@ import {connectionStatus} from './reducers/connectionStatus.reducer'
 
 
 function subscribeMQTT() {
-  const client = mqtt.connect('mqtt://mqtt.broker.gkasperski.usermd.net:1884')
+  const client = mqtt.connect('mqtt://127.0.0.1:1887')
 
   client.on('connect',() =>{
     store.dispatch(connectionStatus('online'));
