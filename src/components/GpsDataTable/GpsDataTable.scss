@@ -1,0 +1,15 @@
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+td {
+    padding: 5px 10px 5px 10px;
+}
+
+.hidden {
+    display: none;
+}

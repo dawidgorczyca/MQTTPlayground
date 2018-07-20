@@ -14,8 +14,7 @@ export default store => next => action => {
   if(action.type === MESSAGE) {
     const currentState = store.getState()
     const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers) : undefined
-
-    const msg = prepareLocationInfo(action.received_msg)
+    const msg = prepareLocationInfo(action.receivedMsg)
     const loc = {
       loc: msg[0],
       time: msg[1]

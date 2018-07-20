@@ -73,29 +73,14 @@ module.exports.getPointsFromDB = (clientId, cb) => {
 }
 
 
-module.exports.getPaidAreas = (cb) => {
+module.exports.getPaidAreas = async (cb) => {
+    const dir = './scripts/defineHeremapArea/';
+    const geometry1 = await gerAreaFromFile(dir + 'area.wkt');
+    const geometry2 = await gerAreaFromFile(dir + 'area2.wkt');
 
-    const result = [];
-    const dirname = './scripts/defineHeremapArea/';
-
-    fs.readdir(dirname, function(err, filenames) {
-
-        const files = filenames.filter(file => file.slice(file.length-4) === '.wkt');
-        files.forEach(function(filename, index) {
-
-            fs.readFile(dirname + filename, 'utf-8', function(err, data) {
-                const geometry = data.toString().split('\r\n')[1].split('\t')[3];
-                result.push(geometry);
-                if (index === files.length-1) {
-                    cb(result);
-                }
-            });
-
-        });
-
-      });
-    
+    cb([geometry1, geometry2]);
 }
+
 
 function getCoordinates(dbData) {
     return dbData.map(obj => {
@@ -122,31 +107,33 @@ function parseHeremapMatchingResponse(data) {
     let point;
     let result = [];
 
-    data.RouteLinks.forEach((oneLine, index) => {
+    if (data.RouteLinks && data.RouteLinks.length) {
+        data.RouteLinks.forEach((oneLine, index) => {
 
-        var coordinates = oneLine.shape.split(' ');
-        if (index === 0) {
-            point = [coordinates[1], coordinates[0], 0];
-            result.push(point);
-        }
-
-        for (let i = 2; i < coordinates.length; i = i+2) {
-            point = [coordinates[i+1], coordinates[i]];
-            if (i === (coordinates.length - 2)) {
-                point[2] = +parseFloat(oneLine.linkLength).toFixed(2);
-            } else {
-                point[2] = 0;
+            var coordinates = oneLine.shape.split(' ');
+            if (index === 0) {
+                point = [coordinates[1], coordinates[0], 0];
+                result.push(point);
             }
-            result.push(point);
-        }
-    });
+
+            for (let i = 2; i < coordinates.length; i = i+2) {
+                point = [coordinates[i+1], coordinates[i]];
+                if (i === (coordinates.length - 2)) {
+                    point[2] = +parseFloat(oneLine.linkLength).toFixed(2);
+                } else {
+                    point[2] = 0;
+                }
+                result.push(point);
+            }
+        });
+    }
 
     return result;
 }
 
 function prepareGpxFile(data) {
 
-    const properData = data.filter(data => (data[0] !== 'undefined') && (data[1] !== 'undefined'));
+    const properData = data.filter(data => !!parseFloat(data[0]));
 
     const points = properData.map(coordinates => {
         return new Point(coordinates[0], coordinates[1])
@@ -221,5 +208,14 @@ function calculate(route) {
 
 function prepareWktLine(points) {
     const stringPoints = points.map(point =>  point[0] + ' ' + point[1]);
-    return 'LINESTRING(' + stringPoints.join(',') + ')';
+    return stringPoints.length ? 'LINESTRING(' + stringPoints.join(',') + ')' : '';
+}
+
+function gerAreaFromFile(dir) {
+    return new Promise(resolve => {
+        fs.readFile(dir, 'utf-8', function(err, data) {
+            const geometry = data.toString().split('\n')[1].split('\t')[3];
+            resolve(geometry);
+        });
+    });
 }

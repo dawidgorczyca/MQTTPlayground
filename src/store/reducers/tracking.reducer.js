@@ -3,7 +3,8 @@ import driverReducer from "./driver.reducer";
 import { ADD_DRIVER, REMOVE_DRIVER, AREA_POINTS_HAVE_BEEN_FETCHED } from "../action.types";
 
 const defaultState = {
-  drivers: []
+  drivers: [],
+  points: []
 };
 
 const trackingReducer = (state = defaultState, action) => {

@@ -4,7 +4,7 @@ import axios from 'axios';
 import './Window.scss'
 import GpsDataTable from '../GpsDataTable/GpsDataTable';
 
-
+export let map = '';
 class Window extends Component {
 
   constructor( props ) {
@@ -37,7 +37,7 @@ class Window extends Component {
     });
 
     //Step 2: initialize a map  - not specificing a location will give a whole world view.
-    let map = new window.H.Map(document.getElementById('map'),
+    map = new window.H.Map(document.getElementById('map'),
       defaultLayers.normal.map, {pixelRatio: pixelRatio});
 
     //Step 3: make the map interactive
@@ -59,6 +59,35 @@ class Window extends Component {
     });
   }
 
+  deleteRouteOnMap = () => {
+
+    map.getObjects().forEach((el)=>{
+     if(el.constructor.name === 'pg')
+       map.removeObject(el);
+   })
+ }
+
+ addRoute = () => {
+  const geoLine = window.H.util.wkt.toGeometry(this.state.choosedRoute);
+  map.addObject(new window.H.map.Polyline(
+    geoLine, { style: { lineWidth: 4, strokeColor: "red"  }}
+  ));
+}
+
+  downloadRouteById = (id) => {
+    axios({
+      method:'get',
+      url:`http://localhost:8080/routeAfterMatching/${id}`
+    })
+    .then(( response ) => {
+      this.setState( { choosedRoute: response.data, chosenDriverId: id } )
+    })
+    .then(() => {
+      this.deleteRouteOnMap();
+      this.addRoute();
+    });
+  }
+
   render() {
 
     return (
@@ -74,13 +103,13 @@ class Window extends Component {
           {this.state.users.map((el) => (
             <tr key={el}>
               <td>{el}</td>
-              <td><button>test</button></td>
+              <td><button onClick={() => this.downloadRouteById(el) }>Show this OBU</button></td>
             </tr>
           ))}
           </tbody></table>
         <div id="map"/>
         <button onClick={this.downloadUsers}>click me</button>
-        <GpsDataTable/>
+        <GpsDataTable driverId={this.state.chosenDriverId}/>
       </div>
     );
   }
