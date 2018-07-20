@@ -73,29 +73,14 @@ module.exports.getPointsFromDB = (clientId, cb) => {
 }
 
 
-module.exports.getPaidAreas = (cb) => {
+module.exports.getPaidAreas = async (cb) => {
+    const dir = './scripts/defineHeremapArea/';
+    const geometry1 = await gerAreaFromFile(dir + 'area.wkt');
+    const geometry2 = await gerAreaFromFile(dir + 'area2.wkt');
 
-    const result = [];
-    const dirname = './scripts/defineHeremapArea/';
-
-    fs.readdir(dirname, function(err, filenames) {
-
-        const files = filenames.filter(file => file.slice(file.length-4) === '.wkt');
-        files.forEach(function(filename, index) {
-
-            fs.readFile(dirname + filename, 'utf-8', function(err, data) {
-                const geometry = data.toString().split('\r\n')[1].split('\t')[3];
-                result.push(geometry);
-                if (index === files.length-1) {
-                    cb(result);
-                }
-            });
-
-        });
-
-      });
-    
+    cb([geometry1, geometry2]);
 }
+
 
 function getCoordinates(dbData) {
     return dbData.map(obj => {
@@ -222,4 +207,13 @@ function calculate(route) {
 function prepareWktLine(points) {
     const stringPoints = points.map(point =>  point[0] + ' ' + point[1]);
     return 'LINESTRING(' + stringPoints.join(',') + ')';
+}
+
+function gerAreaFromFile(dir) {
+    return new Promise(resolve => {
+        fs.readFile(dir, 'utf-8', function(err, data) {
+            const geometry = data.toString().split('\n')[1].split('\t')[3];
+            resolve(geometry);
+        });
+    });
 }
