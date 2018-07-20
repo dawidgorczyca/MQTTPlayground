@@ -9,16 +9,17 @@ class GpsDataTable extends React.Component {
   }
 
   render = () => {
+      console.log(this.props.matchedPoints);
       return (
           <div>
-          
+            Test
           </div>
       )
   };
 }
 
 const mapStateToProps = state => ({
-    
+    matchedPoints: state.tracking.points,
 });
 
 export default connect(mapStateToProps, { fetchAreaPointsForDriver })(GpsDataTable);

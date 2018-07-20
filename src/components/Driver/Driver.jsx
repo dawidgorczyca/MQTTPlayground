@@ -15,6 +15,7 @@ class Driver extends React.Component {
       driverId: "",
       connected: false,
       sentEvents: 0,
+      mockedGpsLocations
     };
     this.timeouts = [];
   }
@@ -22,10 +23,10 @@ class Driver extends React.Component {
   componentDidMount() {
     const client = MqttService.initializeMqttConnection();
     client.on("connect", () => {
-      this.setState({ connected: true});
+      this.setState({ connected: true });
     });
     client.on("offline", () => {
-      this.setState({ connected: false});
+      this.setState({ connected: false });
     });
   }
 
@@ -42,9 +43,12 @@ class Driver extends React.Component {
       navigator.geolocation.getCurrentPosition(
         position =>
           (this.sendPositionInterval = setInterval(
-            (...props) => 
-            MqttService.sendPosition(...props).then(() => 
-              this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
+            (...props) =>
+              MqttService.sendPosition(...props).then(() =>
+                this.setState(prevState => ({
+                  sentEvents: prevState.sentEvents + 1
+                }))
+              ),
             SENDING_GPS_GAP * 1000,
             position,
             this.state.driverId
@@ -56,12 +60,15 @@ class Driver extends React.Component {
   mockGpsData = () => {
     const interval = SENDING_GPS_GAP * 1000;
 
-    mockedGpsLocations.forEach(
+    this.state.mockedGpsLocations.forEach(
       (location, index) =>
         (this.timeouts[index] = setTimeout(
-          (...props) => 
-            MqttService.sendMockedPosition(...props).then(() => 
-              this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
+          (...props) =>
+            MqttService.sendMockedPosition(...props).then(() =>
+              this.setState(prevState => ({
+                sentEvents: prevState.sentEvents + 1
+              }))
+            ),
           index * interval,
           location.latitude,
           location.longitude,
@@ -80,6 +87,21 @@ class Driver extends React.Component {
       prevState => ({ hasDriverStarted: !prevState.hasDriverStarted }),
       () => this.handleDriverStartedStateChange(this.state.hasDriverStarted)
     );
+  };
+
+  updateMockedData = e => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.readAsText(e.target.files[0]);
+      reader.onload = () => {
+        try {
+          const mockedGpsLocations = JSON.parse(reader.result);
+          this.setState({ mockedGpsLocations, errorMessage: "" });
+        } catch (e) {
+          this.setState({errorMessage: "Invalid JSON file"});
+        }
+      };
+    }
   };
 
   render = () => {
@@ -124,6 +146,14 @@ class Driver extends React.Component {
           onClick={() => this.handleGpsGatheringButton()}
         />
         <div className="counter">Sent events: {this.state.sentEvents}</div>
+          <input
+            type="file"
+            onChange={e => this.updateMockedData(e)}
+            accept=".json,application/json"
+          />
+          <div className="error">
+            { this.state.errorMessage }
+          </div>
       </div>
     );
   };

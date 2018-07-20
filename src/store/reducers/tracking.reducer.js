@@ -28,7 +28,6 @@ const trackingReducer = (state = defaultState, action) => {
         drivers: { $push: [action.driver] }
       });
     case AREA_POINTS_HAVE_BEEN_FETCHED:
-      console.log(action);
       return update(state, {
         points: { $set: action.payload }
       });

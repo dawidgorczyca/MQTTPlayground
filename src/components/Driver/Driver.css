@@ -18,6 +18,9 @@ div + div {
   .status.active {
     background-color: green; }
 
+.error {
+  color: red; }
+
 .btn {
   padding: 10px 20px;
   border: none;
