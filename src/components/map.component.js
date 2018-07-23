@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
+import DriversTable from './driversTable/driversTable.component'
 
 import './map.component.css'
 
@@ -51,7 +52,7 @@ class MapComponent extends Component {
     }
 
     newProps.drivers.forEach((newDriver, index)=>{
-      if( newProps.routes && drivers[index] && (newDriver.locations.length !== drivers[index].locations.length) )  {
+      if( newProps.routes && newProps.routes.visibility && drivers[index] && (newDriver.locations.length !== drivers[index].locations.length) )  {
         this.handleRoutes(newProps.routes)
       }
     })
@@ -114,17 +115,7 @@ class MapComponent extends Component {
         <div>
           Connection status: <span className={this.props.status}>{this.props.status}</span>
         </div>
-        <table><tbody>
-          <tr>
-            <th>ACTIVE DRIVERS</th>
-            <th></th>
-          </tr>
-          {drivers.map((el) => (
-            <tr key={el.id}>
-              <td>{el.id}</td>
-            </tr>
-          ))}
-          </tbody></table>
+        <DriversTable/>
         <div id="map"/>
         <button onClick={() => this.zoomSomewhere({lat:51.96300052623031, lng:15.453757994384773})}>Zoom to Zielona Góra</button>
         <button onClick={() => this.zoomSomewhere({lat:48.07788339260274, lng:8.45672405609298})}>Zoom somewhere</button>

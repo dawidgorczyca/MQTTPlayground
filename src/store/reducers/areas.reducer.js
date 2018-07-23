@@ -9,6 +9,7 @@ export const ROUTES_ADD = 'routes/ADD'
 export const ROUTES_RESET = 'routes/RESET'
 export const ROUTES_CHECK = 'routes/CHECK'
 export const ROUTES_EDIT = 'routes/EDIT'
+export const ROUTES_TOOGLE = 'routes/TOOGLE'
 
 export const areasCheck = () => ({
   type: AREAS_CHECK
@@ -31,7 +32,8 @@ export const routesCheck = (id) => ({
 export const routesAdd = (route, driverId) => ({
   type: ROUTES_ADD,
   route: route,
-  driverId: driverId
+  driverId: driverId,
+  visibility: false,
 })
 
 export const routesReset = () => ({
@@ -43,6 +45,12 @@ export const routesEdit = (route, driverIndex, driverId) => ({
   route: route,
   driverIndex: driverIndex,
   driverId: driverId
+})
+
+export const routesToogle = (driverId, visibility) => ({
+  type: ROUTES_TOOGLE,
+  driverId: driverId,
+  visibility: visibility
 })
 
 const defaultState = {
@@ -77,7 +85,8 @@ const areasReducer = (state = defaultState, action) => {
       return update(state, {
         routes: {$push: [{
           route: action.route,
-          driver: action.driverId
+          driver: action.driverId,
+          visibility: action.visibility
         }]}
       })
     case ROUTES_EDIT:
@@ -85,12 +94,17 @@ const areasReducer = (state = defaultState, action) => {
         routes: {$set: [
           ...state.routes.slice(0, action.driverIndex),
           {
+            ...state.routes[action.driverIndex],
             route: action.route,
             driver: action.driverId
           },
           ...state.routes.slice(action.driverIndex + 1)
+
         ]}
       })
+    case ROUTES_TOOGLE:
+      console.log(action);
+      return state;
     default:
       return state
   }
