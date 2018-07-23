@@ -51,7 +51,7 @@ class MapComponent extends Component {
     }
 
     newProps.drivers.forEach((newDriver, index)=>{
-      if( newProps.routes && drivers.length === 0 || newDriver.locations.length !== drivers[index].locations.length) {
+      if( newProps.routes && drivers[index] && (newDriver.locations.length !== drivers[index].locations.length) )  {
         this.handleRoutes(newProps.routes)
       }
     })
