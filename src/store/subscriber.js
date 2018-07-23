@@ -5,18 +5,19 @@ import {connectionStatus} from './reducers/connectionStatus.reducer'
 
 
 function subscribeMQTT() {
-  const client = mqtt.connect('mqtt://mqtt.broker.gkasperski.usermd.net:1884')
+  const client = mqtt.connect('mqtt://localhost:1887')
 
   client.on('connect',() =>{
-    store.dispatch(connectionStatus('online'));
+    store.dispatch(connectionStatus('online'))
   })
   client.on('offline',() =>{
-    store.dispatch(connectionStatus('offline'));
+    store.dispatch(connectionStatus('offline'))
   })
   client.on('connect', () => {
-    client.subscribe('/Tracking/+')
+    client.subscribe('UPDATE/+/+')
   })
   client.on('message', (topic, message) => {
+    console.log(topic, JSON.parse(message.toString()))
     store.dispatch(msg(message.toString(), topic.split('/')[2]))
   })
 }

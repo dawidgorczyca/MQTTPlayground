@@ -1,9 +1,46 @@
 const MongoClient = require('mongodb').MongoClient;
 
+const dbConfig = {
+    dbUrl: `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+    dbUser: process.env.DB_USER,
+    dbMainCollection: process.env.DB_MAIN_COLLECTION,
+    dbName: process.env.DB_NAME
+}
+
+function initializeCollections(config) {
+    const { dbUrl, dbUser, dbMainCollection, dbName } = config
+
+    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, client) => {
+        if (err) {
+            console.log(err)
+            return err
+        }
+        const db = client.db(dbName)
+        db.createCollection('drivers', (collection, err) => {
+            if (err) {
+                console.log(err)
+                return err
+            }
+        })
+        db.createCollection('fences', (collection, err) => {
+            if (err) {
+                console.log(err)
+                return err
+            }
+        })
+        db.createCollection('routes', (collection, err) => {
+            if (err) {
+                console.log(err)
+                return err
+            }
+        })
+    })
+}
+
+module.exports.initializeCollections = initializeCollections
+
 module.exports.getAllData = (cb) => {
-    const dbUrl = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-    const dbUser = process.env.DB_USER;
-    const dbMainCollection = process.env.DB_MAIN_COLLECTION;
+    const { dbUrl, dbUser, dbMainCollection } = dbConfig
 
     MongoClient.connect(dbUrl, { useNewUrlParser: true }, (err, client) => {
         if (err) console.log(err);
@@ -24,9 +61,7 @@ module.exports.getAllData = (cb) => {
 }
 
 module.exports.getDataForClient = (clientId, cb) => {
-    const dbUrl = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-    const dbUser = process.env.DB_NAME;
-    const dbMainCollection = process.env.DB_MAIN_COLLECTION;
+    const { dbUrl, dbUser, dbMainCollection } = dbConfig
 
     MongoClient.connect(dbUrl, { useNewUrlParser: true }, (err, client) => {
         if (err) console.log(err);

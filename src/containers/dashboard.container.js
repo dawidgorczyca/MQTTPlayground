@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 import {
   createStore,
@@ -7,18 +7,18 @@ import {
   combineReducers
 } from 'redux'
 
+import subscribeMQTT from "../store/subscriber"
+
 import trackingReducer from "../store/reducers/tracking.reducer"
 import connectionStatusReducer from '../store/reducers/connectionStatus.reducer'
+import areasReducer from '../store/reducers/areas.reducer'
 import driversMiddleware from "../store/middlewares/drivers.middleware"
 import areasMiddleware from '../store/middlewares/areas.middleware'
 import axiosMiddleware from '../store/middlewares/axios.middleware'
-import areasReducer from '../store/reducers/areas.reducer'
-
-import subscribeMQTT from "../store/subscriber"
 
 import { areasCheck } from '../store/reducers/areas.reducer'
-import { fenceCost } from '../store/reducers/fence.reducer'
 
+import InterfaceContainer from './interface.container'
 import MapComponent from '../components/map.component'
 
 import './dashboard.container.css'
@@ -51,7 +51,9 @@ class DashboardContainer extends Component {
     return(
       <div>
         <Provider store={store}>
-          <MapComponent/>
+          <InterfaceContainer>
+            <MapComponent/>
+          </InterfaceContainer>
         </Provider>
       </div>
     )

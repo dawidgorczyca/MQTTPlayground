@@ -108,9 +108,6 @@ function matchRoute(data, cb) {
         const result = parseHeremapMatchingResponse(JSON.parse(body));
         cb(result);
     });
-
-    ws.on('drain', function () {
-    });
     ws.write(gpxFile);
     ws.end();
 }
@@ -118,7 +115,7 @@ function matchRoute(data, cb) {
 function parseHeremapMatchingResponse(data) {
     let point;
     let result = [];
-
+    
     data.RouteLinks.forEach((oneLine, index) => {
 
         var coordinates = oneLine.shape.split(' ');

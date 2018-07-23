@@ -12,7 +12,8 @@ class Driver extends React.Component {
     super(props);
     this.state = {
       hasDriverStarted: false,
-      driverId: "",
+      driverId: '',
+      driverName: '',
       connected: false,
       sentEvents: 0,
     };
@@ -70,17 +71,32 @@ class Driver extends React.Component {
     );
   };
 
+  mockGpsOnce = () => {
+    const location = mockedGpsLocations[0]
+    MqttService.sendMockedPosition(location.latitude, location.longitude, this.state.driverId)
+  }
+
+  finishRoute = () => {
+    const location = mockedGpsLocations[0]
+    MqttService.sendMockedPosition(location.latitude, location.longitude, this.state.driverId, true)
+  }
+
   stopSendingGpsData = () => {
     clearInterval(this.sendPositionInterval);
     this.timeouts.forEach(t => clearTimeout(t));
   };
 
   handleGpsGatheringButton = () => {
-    this.setState(
-      prevState => ({ hasDriverStarted: !prevState.hasDriverStarted }),
-      () => this.handleDriverStartedStateChange(this.state.hasDriverStarted)
-    );
+    MqttService.activateDriver(this.state.driverId, this.state.driverName)
+    // this.setState(
+    //   prevState => ({ hasDriverStarted: !prevState.hasDriverStarted }),
+    //   () => this.handleDriverStartedStateChange(this.state.hasDriverStarted)
+    // );
   };
+
+  handleUpdateDriverBtn = () => {
+    MqttService.updateDriver(this.state.driverId, this.state.driverName)
+  }
 
   render = () => {
     return (
@@ -105,6 +121,15 @@ class Driver extends React.Component {
             onChange={e => this.setState({ driverId: e.currentTarget.value })}
           />
         </div>
+        <div>
+          <label htmlFor="driver-name">Driver Name: </label>
+          <input
+            type="text"
+            id="driver-name"
+            placeholder="Type in name"
+            onChange={e => this.setState({ driverName: e.currentTarget.value })}
+          />
+        </div>
         <label htmlFor="mock-cb">Mock data</label>
         <input
           type="checkbox"
@@ -124,6 +149,25 @@ class Driver extends React.Component {
           }
           onClick={() => this.handleGpsGatheringButton()}
         />
+        <input
+          type="button"
+          value="Edit current driver"
+          className="btn active"
+          onClick={() => this.handleUpdateDriverBtn()}
+        />
+        <input
+          type="button"
+          value="Route once"
+          className="btn active"
+          onClick={() => this.mockGpsOnce()}
+        />
+        <input
+          type="button"
+          value="Finish route"
+          className="btn active"
+          onClick={() => this.finishRoute()}
+        />
+        
         <div className="counter">Sent events: {this.state.sentEvents}</div>
       </div>
     );

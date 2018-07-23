@@ -2,7 +2,7 @@ import mqtt from "mqtt";
 import { resolve } from "url";
 import { rejects } from "assert";
 
-const BROKER_IP_ADDRESS = "mqtt://mqtt.broker.gkasperski.usermd.net:1884";
+const BROKER_IP_ADDRESS = "mqtt://localhost:1887";
 
 /**
  * Service to maintain mqtt events for drivers
@@ -17,6 +17,21 @@ export const MqttService = (function() {
   const initializeMqttConnection = () =>
     (client = mqtt.connect(BROKER_IP_ADDRESS));
 
+
+  const activateDriver = async (driverId, driverName) => {
+    return await publishMessage({
+      topic: `DRIVERS/${driverId}/ADD`,
+      message: `${driverName}`,
+    })
+  }
+
+  const updateDriver = async (driverId, driverName) => {
+    return await publishMessage({
+      topic: `DRIVERS/${driverId}/UPDATE`,
+      message: `${driverName}`,
+    })
+  }
+
   /**
    * Send message via mqtt
    * @param {Position} position
@@ -24,7 +39,7 @@ export const MqttService = (function() {
    */
   const sendPosition = async (position, driverId) => {
     return await publishMessage({
-      message: `${position.coords.latitude},${position.coords.longitude}|${Date.now()}`,
+      message: `${position.coords.latitude},${position.coords.longitude}|${Date.now()}|${position.end}`,
       driverId
     });
   };
@@ -35,9 +50,10 @@ export const MqttService = (function() {
    * @param {string} longitude
    * @param {string} driverId
    */
-  const sendMockedPosition = async (latitude, longitude, driverId) => {
+  const sendMockedPosition = async (latitude, longitude, driverId, routeFinish) => {
     return await publishMessage({
-      message: `${latitude},${longitude}|${Date.now()}`,
+      topic: `ROUTES/${driverId}/UPDATE`,
+      message: `${latitude}|${longitude}|${Date.now()}|${routeFinish ? routeFinish : ''}`,
       driverId
     });
   };
@@ -48,10 +64,10 @@ export const MqttService = (function() {
    * @param {string} driverId
    *
    */
-  const publishMessage = ({ message, driverId }) => {
+  const publishMessage = ({ message, driverId, topic }) => {
     return new Promise((resolve, reject) => {
       driverId = driverId || "default";
-      client.publish(`/Tracking/${driverId}`, message, null, err => {
+      client.publish(`${topic ? topic : driverId}`, message, null, err => {
         if (!err) {
           console.log(`Published ${message} from ${driverId}`);
           resolve();
@@ -65,6 +81,8 @@ export const MqttService = (function() {
   return {
     initializeMqttConnection,
     sendPosition,
-    sendMockedPosition
+    sendMockedPosition,
+    activateDriver,
+    updateDriver
   };
 })();

@@ -5,6 +5,7 @@ import {
 } from '../reducers/tracking.reducer'
 import { driverLocation } from '../reducers/driver.reducer'
 import { axiosRouteById } from '../actions/axios.actions'
+import { getRandomColor } from '../../services/color.service'
 
 export function findExistingDriver(driver, list, attrName) {
   return list.findIndex(x => x[attrName] === driver)
@@ -16,7 +17,7 @@ function prepareLocationInfo(msg) {
 
 export default store => next => action => {
   if(action.type === MESSAGE) {
-
+    console.log('action',action)
     const currentState = store.getState().tracking;
 
     const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers, 'id') : undefined
@@ -35,10 +36,10 @@ export default store => next => action => {
       store.dispatch(driverLocation(loc, existing))
     }
   }
-  if(action.type === ADD_DRIVER){
-    setInterval(() => {
-      store.dispatch(axiosRouteById(action.driver.id))
-    }, 3000)
-  }
+  // if(action.type === ADD_DRIVER){
+  //   setInterval(() => {
+  //     store.dispatch(axiosRouteById(action.driver.id))
+  //   }, 3000)
+  // }
   next(action)
 }
