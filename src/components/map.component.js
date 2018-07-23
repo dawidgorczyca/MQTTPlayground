@@ -42,6 +42,7 @@ class MapComponent extends Component {
     initializeMap()
     const intervalId = setInterval(this.handleRoutes(this.props.routes), 1000)
     this.setState({intervalId: intervalId})
+    this.addPoints();
   }
 
   componentWillReceiveProps(newProps) {
@@ -82,24 +83,34 @@ class MapComponent extends Component {
       geoLine, { style: { lineWidth: 4, strokeColor: "red"  }}
     ));
   }
+
+  
+  addPoints(){
+    
+    const points = [{
+      "lat": "51.9424539",
+      "lng": "15.501849600000002"
+    },
+    {
+      "lat": "51.94054",
+	  	"lng": "15.503763"
+    },
+    {
+      "lat": "51.937894",
+		  "lng": "15.494247"
+    }];
+
+    points.forEach((point) => {
+      const pointMarker = new window.H.map.Marker(point);
+      map.addObject(pointMarker);
+    });
+    
+  }
+
   zoomSomewhere(coords){
     map.setCenter(coords);
     map.setZoom(14);
   }
-
-  // downloadRouteById(id){
-  //   axios({
-  //     method:'get',
-  //     url:`http://localhost:8080/routeAfterMatching/${id}`
-  //   })
-  //   .then(( response ) => {
-  //     this.setState( { choosedRoute: response.data } )
-  //   })
-  //   .then(() => {
-  //     this.deleteRouteOnMap();
-  //     this.addRoute();
-  //   });
-  // }
 
   deleteRouteOnMap(){
      map.getObjects().forEach((el)=>{
@@ -107,6 +118,8 @@ class MapComponent extends Component {
         map.removeObject(el);
     })
   }
+
+  
 
   render() {
     const { drivers, dispatch } = this.props
