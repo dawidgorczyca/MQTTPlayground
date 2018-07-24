@@ -28,3 +28,5 @@ div + div {
     background-color: #333333fb; }
   .btn.active {
     background-color: #b30000 !important; }
+  .btn.disabled {
+    background-color: gray; }

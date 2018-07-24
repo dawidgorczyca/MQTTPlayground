@@ -1,7 +1,6 @@
 import React from "react";
 import "./Driver.css";
 import { MqttService } from "./Mqtt.service";
-import mockedGpsLocations from "./mockedGpsLocations.json";
 
 const START_TEXT = "Start new route";
 const STOP_TEXT = "Finish route";
@@ -62,7 +61,7 @@ class Driver extends React.Component {
     const { mockedGpsLocations } = this.state
     const interval = SENDING_GPS_GAP * 1000;
 
-    mockedGpsLocations.forEach(
+    mockedGpsLocations.length && mockedGpsLocations.forEach(
       (location, index) =>
         (this.timeouts[index] = setTimeout(
           (...props) => 
@@ -84,15 +83,7 @@ class Driver extends React.Component {
     }, 3000)
   }
 
-  mockGpsOnce = () => {
-    const { mockedGpsLocations } = this.state
-    const location = mockedGpsLocations[0]
-    MqttService.sendMockedPosition(location.latitude, location.longitude, this.state.driverId)
-  }
-
   mockGpsFinish = () => {
-    const { mockedGpsLocations } = this.state
-    const location = mockedGpsLocations[0]
     MqttService.sendMockedPosition('', '', this.state.driverId, 'FINISH')
   }
 
@@ -163,14 +154,22 @@ class Driver extends React.Component {
             onChange={e => this.setState({ driverName: e.currentTarget.value })}
           />
         </div>
-        <input
-          type="button"
-          value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
-          className={
-            this.state.hasDriverStarted ? "btn active" : "btn inactive"
-          }
-          onClick={() => this.handleGpsGatheringButton()}
-        />
+        {this.state.mockedGpsLocations.length ? (
+          <input
+            type="button"
+            value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
+            className={
+              this.state.hasDriverStarted ? "btn active" : "btn inactive"
+            }
+            onClick={() => this.handleGpsGatheringButton()}
+          />
+        ) : (
+          <input
+            type="button"
+            value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
+            className="btn disabled"
+          />
+        )}
         <input 
           type="button"
           value="Register driver"
