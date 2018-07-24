@@ -2,12 +2,15 @@ const express = require('express');
 const app = express();
 var cors = require('cors');
 require('dotenv-safe').config();
-const db = require('../helper/mongoHelper');
-const heremap = require('../helper/heremapHelper');
+const db = require('../backend/mongoHelper');
+const heremap = require('../backend/heremapHelper');
+const { dbEvents } = require('../backend/backend.events')
 
-module.exports.start = () => {
+function start(){
     
     app.use(cors());
+    app.use(express.json());       // to support JSON-encoded bodies
+    app.use(express.urlencoded()); // to support URL-encoded bodies
 
     // Endpoint returns all clients that are in DB
     app.get('/clients', (req, res) => {
@@ -79,7 +82,7 @@ module.exports.start = () => {
             return res.send(data);
         });
     });
-
+    
     // Endpoint returns paid areas as an array of WKT file strings
     app.get('/paidAreas', (req, res) => {
         heremap.getPaidAreas(data => {
@@ -87,6 +90,75 @@ module.exports.start = () => {
         });
     });
 
+    app.get('/drivers', async (req, res) => {
+        dbEvents.getFromDb(
+            'drivers',
+            (collection) => {
+                res.send(collection)
+        })
+    })
+
+    app.get('/routes', async (req, res) => {
+        dbEvents.getFromDb(
+            'routes',
+            (collection) => {
+                res.send(collection)
+        })
+    })
+
+    app.get('/fences', async (req, res) => {
+        dbEvents.getFromDb(
+            'fences',
+            (collection) => {
+                res.send(collection)
+        })
+    })
+
+    app.get('/drivers/:driverId', async (req, res) => {
+        const driverId = req.params.driverId
+        dbEvents.getFromCollection(
+            'drivers',
+            {id: driverId},
+            (driver) => {
+                res.send(driver)
+        })
+    })
+
+    app.get('/routes/:routeId', async (req, res) => {
+        const routeId = req.params.routeId
+        dbEvents.getFromCollection(
+            'routes',
+            {_id: routeId},
+            (route) => {
+                res.send(route)
+        })
+    })
+
+    app.get('/fences/:fenceId', async (req, res) => {
+        const fenceId = req.params.fenceId
+        dbEvents.getFromCollection(
+            'fences',
+            {_id: fenceId},
+            (fence) => {
+                res.send(fence)
+        })
+    })
+
+    app.post('/matchroute', async (req, res) => {
+        const { body } = req
+        const points = JSON.parse(JSON.stringify(body.points))
+        points.shift()
+        points.pop()
+        await heremap.matchSingleRoute({
+                route: points,
+                price: body.price
+            }, (calculatedInfo) => {
+            res.send(calculatedInfo)
+        })
+    })
+
     app.listen(8080, () => console.log('REST API listening on port 8080.'));
 
 };
+
+start();

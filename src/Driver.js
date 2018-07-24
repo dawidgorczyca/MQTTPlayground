@@ -1,10 +1,9 @@
 import React from "react";
 import "./Driver.css";
 import { MqttService } from "./Mqtt.service";
-import mockedGpsLocations from "./mockedGpsLocations.json";
 
-const START_TEXT = "Start gathering GPS data";
-const STOP_TEXT = "Stop gathering GPS data";
+const START_TEXT = "Start new route";
+const STOP_TEXT = "Finish route";
 const SENDING_GPS_GAP = 3;
 
 class Driver extends React.Component {
@@ -12,9 +11,12 @@ class Driver extends React.Component {
     super(props);
     this.state = {
       hasDriverStarted: false,
-      driverId: "",
+      driverId: '',
+      driverName: '',
       connected: false,
       sentEvents: 0,
+      mockedGpsLocations: '',
+      eventsGap: SENDING_GPS_GAP
     };
     this.timeouts = [];
   }
@@ -31,49 +33,70 @@ class Driver extends React.Component {
 
   handleDriverStartedStateChange = hasDriverStartedState => {
     if (hasDriverStartedState === true) {
-      this.state.shouldDataBeMocked ? this.mockGpsData() : this.gatherGpsData();
+      this.mockGpsStart()
     } else {
-      this.stopSendingGpsData();
+      this.stopSendingGpsData()
+      setTimeout(() => {
+        this.mockGpsFinish()
+      }, 1000)
     }
   };
 
-  gatherGpsData = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position =>
-          (this.sendPositionInterval = setInterval(
-            (...props) => 
-            MqttService.sendPosition(...props).then(() => 
-              this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
-            SENDING_GPS_GAP * 1000,
-            position,
-            this.state.driverId
-          ))
-      );
-    }
-  };
+  // gatherGpsData = () => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       position =>
+  //         (this.sendPositionInterval = setInterval(
+  //           (...props) => 
+  //           MqttService.sendPosition(...props).then(() => 
+  //             this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
+  //           SENDING_GPS_GAP * 1000,
+  //           position,
+  //           this.state.driverId
+  //         ))
+  //     );
+  //   }
+  // };
 
   mockGpsData = () => {
-    const interval = SENDING_GPS_GAP * 1000;
-
-    mockedGpsLocations.forEach(
+    const { mockedGpsLocations, eventsGap } = this.state
+    const interval = parseInt(eventsGap) * 1000;
+    console.log(eventsGap * 1000)
+    console.log(interval)
+    mockedGpsLocations.length && mockedGpsLocations.forEach(
       (location, index) =>
         (this.timeouts[index] = setTimeout(
           (...props) => 
-            MqttService.sendMockedPosition(...props).then(() => 
+            MqttService.sendMockedPosition(...props, this.state.driverId, '').then(() => 
               this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
           index * interval,
           location.latitude,
           location.longitude,
-          this.state.driverId
+          this.state.driverId,
+          ''
         ))
     );
   };
+
+  mockGpsStart = async () => {
+    await MqttService.sendMockedPosition('', '', this.state.driverId, 'ACTIVE')
+    setTimeout(() => {
+      this.mockGpsData()
+    }, 3000)
+  }
+
+  mockGpsFinish = () => {
+    MqttService.sendMockedPosition('', '', this.state.driverId, 'FINISH')
+  }
 
   stopSendingGpsData = () => {
     clearInterval(this.sendPositionInterval);
     this.timeouts.forEach(t => clearTimeout(t));
   };
+
+  registerDriver = () => {
+    MqttService.activateDriver(this.state.driverId, this.state.driverName)
+  }
 
   handleGpsGatheringButton = () => {
     this.setState(
@@ -81,6 +104,29 @@ class Driver extends React.Component {
       () => this.handleDriverStartedStateChange(this.state.hasDriverStarted)
     );
   };
+
+  handleUpdateDriverBtn = () => {
+    MqttService.updateDriver(this.state.driverId, this.state.driverName)
+  }
+
+  updateMockedData = e => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.readAsText(e.target.files[0]);
+      reader.onload = () => {
+        try {
+          const mockedGpsLocations = JSON.parse(reader.result);
+          this.setState({ mockedGpsLocations, errorMessage: "" });
+        } catch (e) {
+          this.setState({errorMessage: "Invalid JSON file"});
+        }
+      };
+    }
+  };
+
+  handleEventsGap = (newValue) => {
+    this.setState({'eventsGap': newValue})
+  }
 
   render = () => {
     return (
@@ -97,6 +143,15 @@ class Driver extends React.Component {
           </span>
         </div>
         <div>
+          <label htmlFor="events-gap">Time gap between events: </label>
+          <input
+            type="number"
+            id="events-gap"
+            placeholder=""
+            onChange={e => this.setState({ eventsGap: e.currentTarget.value })}
+          />
+        </div>
+        <div>
           <label htmlFor="driver-id">Driver id: </label>
           <input
             type="text"
@@ -105,26 +160,54 @@ class Driver extends React.Component {
             onChange={e => this.setState({ driverId: e.currentTarget.value })}
           />
         </div>
-        <label htmlFor="mock-cb">Mock data</label>
-        <input
-          type="checkbox"
-          id="mock-cb"
-          onClick={() =>
-            this.setState({
-              shouldDataBeMocked: !this.state.shouldDataBeMocked
-            })
-          }
-          checked={this.state.shouldDataBeMocked ? true : false}
+        <div>
+          <label htmlFor="driver-name">Driver Name: </label>
+          <input
+            type="text"
+            id="driver-name"
+            placeholder="Type in name"
+            onChange={e => this.setState({ driverName: e.currentTarget.value })}
+          />
+        </div>
+        {this.state.mockedGpsLocations.length ? (
+          <input
+            type="button"
+            value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
+            className={
+              this.state.hasDriverStarted ? "btn active" : "btn inactive"
+            }
+            onClick={() => this.handleGpsGatheringButton()}
+          />
+        ) : (
+          <input
+            type="button"
+            value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
+            className="btn disabled"
+          />
+        )}
+        <input 
+          type="button"
+          value="Register driver"
+          className="btn active"
+          onClick={() => this.registerDriver()}
         />
         <input
           type="button"
-          value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
-          className={
-            this.state.hasDriverStarted ? "btn active" : "btn inactive"
-          }
-          onClick={() => this.handleGpsGatheringButton()}
+          value="Edit current driver"
+          className="btn active"
+          onClick={() => this.handleUpdateDriverBtn()}
         />
+        
         <div className="counter">Sent events: {this.state.sentEvents}</div>
+        <h3>Upload your mocked route:</h3>
+        <input
+            type="file"
+            onChange={e => this.updateMockedData(e)}
+            accept=".json,application/json"
+          />
+          <div className="error">
+            { this.state.errorMessage }
+          </div>
       </div>
     );
   };

@@ -1,31 +1,52 @@
-import { MESSAGE, addDriver } from '../reducers/tracking.reducer'
-import { driverLocation } from '../reducers/driver.reducer'
+import { subActionNames } from '../actions/subscriber.actions'
+import {
+  driversTopics
+} from '../reducers/drivers.constants'
+import {
+  driversSet,
+  driversEdit,
+  driversSetAll
+} from '../actions/drivers.actions'
+import { AXIOS_DRIVERS_GET } from '../actions/axios.actions'
 
-function findExistingDriver(driver, list) {
-  return list.findIndex(x => x.id === driver)
+function handleDriversSet(store, action) {
+  store.dispatch(driversSet(action.payload))
 }
 
-function prepareLocationInfo(msg) {
-  return msg.split('|')
+function handleDriversEdit(store, action) {
+  const existingDrivers = store.getState().drivers.drivers
+  const driverIndex = existingDrivers.findIndex(driver => driver._id === action.payload._id)
+  
+  if(driverIndex !== -1) {
+    store.dispatch(driversEdit(action.payload, driverIndex))
+  }
 }
 
-export default store => next => action => {
-  if(action.type === MESSAGE) {
+function handleDriversEvents(store, action) {
+  const topic = action.topic.split('/')
 
-    const currentState = store.getState().tracking;
+  if(topic[2] === driversTopics.new) {
+    handleDriversSet(store, action)
+  } else if(topic[2] === driversTopics.edit) {
+    handleDriversEdit(store, action)
+  }
 
-    const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers) : undefined
+}
 
-    const msg = prepareLocationInfo(action.recieved_msg)
-    const loc = {
-      loc: msg[0],
-      time: msg[1]
+export default store => next => async (action) => {
+  if(action.type === subActionNames.SUBSCRIBER_UPDATE) {
+    try {
+      const topic = action.topic.split('/')
+      if(topic[1] === driversTopics.main){
+        await handleDriversEvents(store, action)
+      }
+    } catch(err) {
+      console.log(err)
+      return err
     }
-    
-    existing ? store.dispatch(addDriver({
-      id: action.sender,
-      locations: [loc]
-    })) : store.dispatch(driverLocation(loc, existing))
+  }
+  if(action.type === `RESPONSE/${AXIOS_DRIVERS_GET}`) {
+    store.dispatch(driversSetAll(action.payload.data))
   }
   next(action)
 }
