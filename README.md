@@ -36,9 +36,9 @@ process.env.DB_NAME            =  'mqtt'
 process.env.DB_MAIN_COLLECTION =  'events'
 ```
 And at last, open three terminal windows of your choice and run separately from main folder:
--`npm run start` Which would start the frontend
--`npm run broker-start` Which will start the broker which we treat as the main backend
--`node broker/router.js`
+* `npm run start` Which would start the frontend
+* `npm run broker-start` Which will start the broker which we treat as the main backend
+* `node broker/router.js`
 Thats it!
 
 
