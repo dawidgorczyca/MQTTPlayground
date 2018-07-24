@@ -20,6 +20,7 @@ function prepareLineString(lineData) {
 
 export function addRoute(map, route) {
   removeAllRoads(map)
+  console.log('route in map.events ', route);
   const line = prepareLineString(route)
   console.log('line', line)
   map.addObject(new window.H.map.Polyline(

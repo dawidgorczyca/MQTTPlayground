@@ -13,9 +13,7 @@ class InterfaceContainer extends Component {
   constructor( props ) {
     super( props );
     this.state = {
-      activeDriver: '',
-      activeRouteId: null,
-      driversRoutesIds: []
+      activeDriver: ''
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -36,29 +34,31 @@ class InterfaceContainer extends Component {
   handleActiveRoad(routes) {
     const { activeDriver } = this.state
     const activeRoad = this.getDriverActiveRoute(activeDriver)
-    console.log('activeRoad ', activeRoad);
         
     if(activeRoad !== -1) {
-      let activeRoadPoints = JSON.parse(JSON.stringify(routes[activeRoad].points))
-      console.log('activeRoadPoints',routes[activeRoad].points)
+      this.printRoute(routes, activeRoad);
+    }
+  }
+  handleSingleRoute(routeId) {
+    const {routes} = this.props; 
+    removeAllRoads(mapService.map)
+    this.printRoute(routes, routeId)
+    
+  }
+  printRoute(routes, routeId) {
+    let activeRoadPoints = JSON.parse(JSON.stringify(routes[routeId].points))
       if(activeRoadPoints.length >= 3) {
         activeRoadPoints.shift()
-        console.log('activeRoadPoints splice',activeRoadPoints)
         addRoute(
           mapService.map,
           activeRoadPoints
         )
       }
-    }
   }
 
   getDriverActiveRoute(driverId) {
-    const { routes, activeRouteId } = this.props
-    if(activeRouteId) {
-      return activeRouteId
-    } else {
-      return routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
-    }
+    const { routes } = this.props;
+    return routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
   }
   getDriverStatus(driverId) {
     return this.getDriverActiveRoute(driverId) !== -1 ? 'ACTIVE' : 'UNACTIVE'
@@ -76,9 +76,6 @@ class InterfaceContainer extends Component {
       this.handleZoom(pointData, 14)
     }
   }
-  handleCurrentRoute(){
-    this.setState({activeRouteId: null});
-  }
 
   handleFenceZoom(fenceIndex) {
     if(fenceIndex === 1){
@@ -88,23 +85,6 @@ class InterfaceContainer extends Component {
       }, 14)
     }
   }
-
-  // getDriversRoutes(){
-  //   const { routes } = this.props
-  //   this.setState({driversRoutesIds: {}});
-    
-  //   routes.driverId.forEach((driver)=>{
-  //     driversRoutesIds.push({id: driver})
-  //   });
-
-  //   routes.forEach((route, index)=>{ 
-  //     if(route.driverId === driverId) {
-  //       this.setState(prevState => ({
-  //         driverRoutesIds: [...prevState.driverRoutesIds, index]
-  //       }))
-  //     }
-  //   });
-  // }
 
   // TODO: Below functions should go to separate components
   renderDrivers(drivers) {
@@ -130,10 +110,10 @@ class InterfaceContainer extends Component {
             onClick={() => this.zoomLastPosition(driver.id)}
           />
         )}
-        {routes.map((route) => {
+        {routes.map((route, index) => {
           return(
             route.driverId === driver.id && (
-           <button>asd</button>)
+           <button key={index} onClick={()=> this.handleSingleRoute(index)}>{index}</button>)
           )  
         })}
       </li>)
