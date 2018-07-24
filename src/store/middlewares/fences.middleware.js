@@ -7,7 +7,11 @@ import {
   fencesEdit,
   fencesSetAll
 } from '../actions/fences.actions'
+
 import { AXIOS_FENCES_GET } from '../actions/axios.actions'
+
+import map from '../../services/map.service'
+import { addFence } from '../../services/map.events'
 
 function handleFencesSet(store, action) {
   store.dispatch(fencesSet(action.payload))
@@ -46,7 +50,12 @@ export default store => next => async (action) => {
     }
   }
   if(action.type === `RESPONSE/${AXIOS_FENCES_GET}`) {
-    store.dispatch(fencesSetAll(action.payload.data))
+    if(action.payload.data) {
+      store.dispatch(fencesSetAll(action.payload.data))
+      action.payload.data.length && action.payload.data.forEach((fence) => {
+        addFence(map.map, fence)
+      })
+    }
   }
   next(action)
 }

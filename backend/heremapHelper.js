@@ -77,9 +77,9 @@ module.exports.getPaidAreas = (cb) => {
 
     fs.readdir(dirname, function(err, filenames) {
 
-        const files = filenames.filter(file => file.slice(file.length-4) === '.wkt');
+        const files = filenames.filter(file => file.split('.')[1] === 'wkt');
         files.forEach(function(filename, index) {
-
+            console.log('filename',filename)
             fs.readFile(dirname + filename, 'utf-8', function(err, data) {
                 const geometry = data.toString().split('\n')[1].split('\t')[3];
                 result.push(geometry);

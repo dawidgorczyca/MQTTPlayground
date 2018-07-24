@@ -46,7 +46,9 @@ export default store => next => async (action) => {
     }
   }
   if(action.type === `RESPONSE/${AXIOS_ROUTES_GET}`) {
-    store.dispatch(routesSetAll(action.payload.data))
+    if(action.payload.data){
+      store.dispatch(routesSetAll(action.payload.data))
+    }
   }
   next(action)
 }

@@ -1,18 +1,30 @@
-function convertWkt(lineData) {
-  return window.H.util.wkt.toGeometry(lineData)
+function prepareLineString(lineData) {
+  console.log('lineData', lineData)
+  const lineString = new window.H.geo.LineString()
+
+  lineData.forEach((point) => {
+    console.log('point', point.latitude, point.longitude)
+    if(point.latitude && point.longitude) {
+      const lat = parseFloat(point.latitude)
+      const lng = parseFloat(point.longitude)
+      console.log('lat, lng',lat, lng)
+      if(lat !== NaN && lng !== NaN) {
+        console.log('point',{lat: lat, lng: lng})
+        lineString.pushPoint({lat: lat, lng: lng})
+      }
+    }
+  })
+
+  return lineString
 }
 
-export function addPolylineToMap(map, lineData) {
-  console.log('lineData',lineData)
-  // map.addObject(new window.H.map.Polyline(
-  //   lineData, { style: { lineWidth: 3, strokeColor: 'red' }}
-  // ))
-}
-
-function addRoute(route) {
-  console.log('addRoute', route)
-
-  this.drawRoute(route.route)
+export function addRoute(map, route) {
+  removeAllRoads(map)
+  const line = prepareLineString(route)
+  console.log('line', line)
+  map.addObject(new window.H.map.Polyline(
+    line, { style: { lineWidth: 3, strokeColor: 'red' }}
+  ))
 }
 function editRoute(route) {
 
@@ -29,8 +41,9 @@ function editMarker(marker){
 function deleteMarker(markerId){
 
 }
-function addFence(fence){
-
+export function addFence(map, fence){
+  const geoPolygon = window.H.util.wkt.toGeometry(fence.raw)
+  map.addObject(new window.H.map.Polygon(geoPolygon))
 }
 function editFence(fence){
   
@@ -38,6 +51,9 @@ function editFence(fence){
 function removeFence(fence){
 
 }
-function removeAll(){
-
+export function removeAllRoads(map){
+  map.getObjects().forEach((el)=>{
+    if(el.constructor.name === 'pg')
+      map.removeObject(el);
+  })
 }

@@ -46,9 +46,6 @@ export const store = createStore(
 )
 
 class DashboardContainer extends Component {
-  componentDidMount(){
-    // store.dispatch(areasCheck())
-  }
   render() {
     subscribeMQTT()
     return(
