@@ -52,6 +52,7 @@ export default store => next => async (action) => {
   if(action.type === `RESPONSE/${AXIOS_FENCES_GET}`) {
     if(action.payload.data) {
       store.dispatch(fencesSetAll(action.payload.data))
+      console.log('action.payload.data',action.payload.data)
       action.payload.data.length && action.payload.data.forEach((fence) => {
         addFence(map.map, fence)
       })

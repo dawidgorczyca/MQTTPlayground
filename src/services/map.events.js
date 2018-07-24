@@ -58,6 +58,18 @@ export function removeAll(map) {
         map.removeObject(object)
   }
 }
+
+export function removeMarkersRoads(map){
+  removeAllMarkers(map)
+  removeAllRoads(map)
+}
+
+export function removeAllMarkers(map) {
+  map.getObjects().forEach((el)=>{
+    if(el.constructor.name === 'xi')
+      map.removeObject(el);
+  })
+}
 export function removeAllRoads(map){
   map.getObjects().forEach((el)=>{
     if(el.constructor.name === 'pg')

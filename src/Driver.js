@@ -15,7 +15,8 @@ class Driver extends React.Component {
       driverName: '',
       connected: false,
       sentEvents: 0,
-      mockedGpsLocations: ''
+      mockedGpsLocations: '',
+      eventsGap: SENDING_GPS_GAP
     };
     this.timeouts = [];
   }
@@ -58,9 +59,10 @@ class Driver extends React.Component {
   // };
 
   mockGpsData = () => {
-    const { mockedGpsLocations } = this.state
-    const interval = SENDING_GPS_GAP * 1000;
-
+    const { mockedGpsLocations, eventsGap } = this.state
+    const interval = parseInt(eventsGap) * 1000;
+    console.log(eventsGap * 1000)
+    console.log(interval)
     mockedGpsLocations.length && mockedGpsLocations.forEach(
       (location, index) =>
         (this.timeouts[index] = setTimeout(
@@ -122,6 +124,10 @@ class Driver extends React.Component {
     }
   };
 
+  handleEventsGap = (newValue) => {
+    this.setState({'eventsGap': newValue})
+  }
+
   render = () => {
     return (
       <div className="driver-main">
@@ -135,6 +141,15 @@ class Driver extends React.Component {
           >
             {this.state.connected ? "ONLINE" : "OFFLINE"}
           </span>
+        </div>
+        <div>
+          <label htmlFor="events-gap">Time gap between events: </label>
+          <input
+            type="number"
+            id="events-gap"
+            placeholder=""
+            onChange={e => this.setState({ eventsGap: e.currentTarget.value })}
+          />
         </div>
         <div>
           <label htmlFor="driver-id">Driver id: </label>

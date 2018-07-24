@@ -8,7 +8,7 @@ import {
   addRoute,
   removeAllRoads,
   addMarker,
-  removeAll
+  removeMarkersRoads
 } from '../services/map.events'
 
 class InterfaceContainer extends Component {
@@ -28,6 +28,7 @@ class InterfaceContainer extends Component {
       this.setState( { activeDriver: '' } )
     } else {
       this.setState( { activeDriver: driver } )
+      this.handleActiveRoad(this.props.routes)
     }
   }
 
@@ -37,6 +38,7 @@ class InterfaceContainer extends Component {
         
     if(activeRoad !== -1) {
       let activeRoadPoints = JSON.parse(JSON.stringify(routes[activeRoad].points))
+      console.log('activeRoadPoints.length', activeRoadPoints.length)
       console.log('activeRoadPoints',routes[activeRoad].points)
       if(activeRoadPoints.length >= 3) {
         activeRoadPoints.shift()
@@ -54,7 +56,7 @@ class InterfaceContainer extends Component {
     const lastPoint = preparedPoints[preparedPoints.length - 2]
     if(preparedPoints.length >= 3) {
       preparedPoints.shift()
-      removeAll(mapService.map)
+      removeMarkersRoads(mapService.map)
       addRoute(
         mapService.map,
         points
@@ -69,7 +71,7 @@ class InterfaceContainer extends Component {
     const lastPoint = preparedPoints[preparedPoints.length - 2]
     if(preparedPoints.length >= 3) {
       preparedPoints.shift()
-      removeAll(mapService.map)
+      removeMarkersRoads(mapService.map)
       preparedPoints.forEach((point)=> {
         addMarker(mapService.map, point)
       })
@@ -101,6 +103,12 @@ class InterfaceContainer extends Component {
   }
 
   handleFenceZoom(fenceIndex) {
+    if(fenceIndex === 0){
+      this.handleZoom({
+        "latitude": 48.086733,
+        "longitude": 8.448947
+      }, 13)
+    }
     if(fenceIndex === 1){
       this.handleZoom({
         "latitude": 51.935365,
@@ -177,14 +185,12 @@ class InterfaceContainer extends Component {
       return (
         <li key={fence._id} onClick={() => this.handleFenceZoom(index)}>
           Fence #{index}
-          { index === 1 && (
-            <input
-              type="button"
-              value="Show"
-              className="btn active"
-              onClick={() => this.handleFenceZoom(index)}
-            />
-          )}
+          <input
+            type="button"
+            value="Show"
+            className="btn active"
+            onClick={() => this.handleFenceZoom(index)}
+          />
         </li>
       )
     })
@@ -200,6 +206,14 @@ class InterfaceContainer extends Component {
       <div className="interfaceContainer">
         <div className="interfaceContainer__status">
           Connection status: <span className={mqttStatus}>{mqttStatus}</span>
+        </div>
+        <div>
+          <input
+            type="button"
+            value="Clear map selection"
+            className="btn active"
+            onClick={() => removeMarkersRoads(mapService.map)}
+          />
         </div>
         <div className="interfaceContainer__drivers">
           <h3>Drivers:</h3>

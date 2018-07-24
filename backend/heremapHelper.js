@@ -71,12 +71,10 @@ module.exports.getPointsFromDB = (clientId, cb) => {
 
 
 module.exports.getPaidAreas = (cb) => {
-
-    const result = [];
     const dirname = './scripts/defineHeremapArea/';
 
     fs.readdir(dirname, (err, filenames) => {
-
+        const result = [];
         const files = filenames.filter(file => file.split('.')[1] === 'wkt');
         files.forEach(function(filename, index) {
             fs.readFile(dirname + filename, 'utf-8', function(err, data) {
