@@ -32,8 +32,9 @@ function editRoute(route) {
 function deleteRoute(routeId) {
 
 }
-function addMarker(marker){
-
+export function addMarker(map, marker){
+  var newMarker = new window.H.map.Marker({lat:marker.latitude, lng:marker.longitude});
+  map.addObject(newMarker)
 }
 function editMarker(marker){
 
@@ -50,6 +51,12 @@ function editFence(fence){
 }
 function removeFence(fence){
 
+}
+
+export function removeAll(map) {
+  for (let object of map.getObjects()){  
+        map.removeObject(object)
+  }
 }
 export function removeAllRoads(map){
   map.getObjects().forEach((el)=>{

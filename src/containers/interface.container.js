@@ -6,7 +6,9 @@ import './interface.container.css'
 import mapService from '../services/map.service'
 import {
   addRoute,
-  removeAllRoads
+  removeAllRoads,
+  addMarker,
+  removeAll
 } from '../services/map.events'
 
 class InterfaceContainer extends Component {
@@ -47,6 +49,35 @@ class InterfaceContainer extends Component {
     }
   }
 
+  handleRouteLineShow(points) {
+    const preparedPoints = JSON.parse(JSON.stringify(points))
+    const lastPoint = preparedPoints[preparedPoints.length - 2]
+    if(preparedPoints.length >= 3) {
+      preparedPoints.shift()
+      removeAll(mapService.map)
+      addRoute(
+        mapService.map,
+        points
+      )
+      this.handleZoom(lastPoint, 14)
+    }
+    this.setState({'activeDriver': ''})
+  }
+
+  handleRouteMarkersShow(points) {
+    const preparedPoints = JSON.parse(JSON.stringify(points))
+    const lastPoint = preparedPoints[preparedPoints.length - 2]
+    if(preparedPoints.length >= 3) {
+      preparedPoints.shift()
+      removeAll(mapService.map)
+      preparedPoints.forEach((point)=> {
+        addMarker(mapService.map, point)
+      })
+      this.handleZoom(lastPoint, 14)
+    }
+    this.setState({'activeDriver': ''})
+  }
+
   getDriverActiveRoute(driverId) {
     const { routes } = this.props
     const activeRoute = routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
@@ -78,6 +109,40 @@ class InterfaceContainer extends Component {
     }
   }
 
+  renderDriverRoutes(driverId) {
+    const { routes } = this.props
+    const activeRouteIndex = this.getDriverActiveRoute(driverId)
+    const routesToShow = JSON.parse(JSON.stringify(routes))
+    
+    activeRouteIndex !== -1 && routesToShow.splice(activeRouteIndex, 1)
+    
+    return (
+      <div className="">
+        <h3>Drivers routes:</h3>
+        <ul>
+        {routesToShow.map((route, index) => (
+          <li key={route._id}>
+            Route #{index}
+
+            <input
+              type="button"
+              value="Show route as line"
+              className="btn active"
+              onClick={() => this.handleRouteLineShow(route.points)}
+            />
+            <input
+              type="button"
+              value="Show route as points"
+              className="btn active"
+              onClick={() => this.handleRouteMarkersShow(route.points)}
+            />
+          </li>
+        ))}
+        </ul>
+      </div>
+    )
+  }
+
   // TODO: Below functions should go to separate components
   renderDrivers(drivers) {
     const { activeDriver } = this.state
@@ -94,13 +159,16 @@ class InterfaceContainer extends Component {
           onClick={() => this.setActiveDriver(driver.id)}
         />
         {activeDriver === driver.id && (
-          <input
-            type="button"
-            value="Show current location"
-            className="btn active"
-            onClick={() => this.zoomLastPosition(driver.id)}
-          />
-        )}
+          <div>
+            <input
+              type="button"
+              value="Show current location"
+              className="btn active"
+              onClick={() => this.zoomLastPosition(driver.id)}
+            />
+          </div>
+        )}<br/>
+        {this.renderDriverRoutes(driver.id)}
       </li>)
     })
   }
