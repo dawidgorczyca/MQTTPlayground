@@ -11,15 +11,23 @@ import {
   removeMarkersRoads
 } from '../services/map.events'
 
+import DriversListComponent from '../components/drivers.component'
+
 class InterfaceContainer extends Component {
   constructor( props ) {
     super( props );
     this.state = {
       activeDriver: ''
     };
+
+    this.getDriverActiveRoute = this.getDriverActiveRoute.bind(this)
+    this.handleRouteShow = this.handleRouteShow.bind(this)
+    this.zoomLastPosition = this.zoomLastPosition.bind(this)
+    this.setActiveDriver = this.setActiveDriver.bind(this)
+    this.getDriverStatus = this.getDriverStatus.bind(this)
   }
   componentWillReceiveProps(nextProps) {
-    this.handleActiveRoad(nextProps.routes)
+    nextProps.routes && this.handleActiveRoad(nextProps.routes)
   }
 
   setActiveDriver(driver) {
@@ -38,11 +46,9 @@ class InterfaceContainer extends Component {
         
     if(activeRoad !== -1) {
       let activeRoadPoints = JSON.parse(JSON.stringify(routes[activeRoad].points))
-      console.log('activeRoadPoints.length', activeRoadPoints.length)
-      console.log('activeRoadPoints',routes[activeRoad].points)
+
       if(activeRoadPoints.length >= 3) {
         activeRoadPoints.shift()
-        console.log('activeRoadPoints splice',activeRoadPoints)
         addRoute(
           mapService.map,
           activeRoadPoints
@@ -51,31 +57,23 @@ class InterfaceContainer extends Component {
     }
   }
 
-  handleRouteLineShow(points) {
+  handleRouteShow(points, mode){
     const preparedPoints = JSON.parse(JSON.stringify(points))
     const lastPoint = preparedPoints[preparedPoints.length - 2]
     if(preparedPoints.length >= 3) {
       preparedPoints.shift()
       removeMarkersRoads(mapService.map)
-      addRoute(
-        mapService.map,
-        points
-      )
-      this.handleZoom(lastPoint, 14)
-    }
-    this.setState({'activeDriver': ''})
-  }
-
-  handleRouteMarkersShow(points) {
-    const preparedPoints = JSON.parse(JSON.stringify(points))
-    const lastPoint = preparedPoints[preparedPoints.length - 2]
-    if(preparedPoints.length >= 3) {
-      preparedPoints.shift()
-      removeMarkersRoads(mapService.map)
-      preparedPoints.forEach((point)=> {
-        addMarker(mapService.map, point)
-      })
-      this.handleZoom(lastPoint, 14)
+      if(mode === 'line'){
+        addRoute(
+          mapService.map,
+          preparedPoints
+        )
+      } else if(mode === 'markers'){
+        preparedPoints.forEach((point)=> {
+          addMarker(mapService.map, point)
+        })
+      }
+      this.handleZoom(lastPoint, 12)
     }
     this.setState({'activeDriver': ''})
   }
@@ -85,13 +83,16 @@ class InterfaceContainer extends Component {
     const activeRoute = routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
     return activeRoute
   }
+
   getDriverStatus(driverId) {
     return this.getDriverActiveRoute(driverId) !== -1 ? 'ACTIVE' : 'UNACTIVE'
   }
+
   handleZoom(zoomCoords, zoomLevel) {
     mapService.map.setCenter({lat:zoomCoords.latitude, lng:zoomCoords.longitude})
     mapService.map.setZoom(zoomLevel)
   }
+
   zoomLastPosition(driverId) {
     const { routes } = this.props
     const activeRouteIndex = this.getDriverActiveRoute(driverId)
@@ -117,69 +118,6 @@ class InterfaceContainer extends Component {
     }
   }
 
-  renderDriverRoutes(driverId) {
-    const { routes } = this.props
-    const activeRouteIndex = this.getDriverActiveRoute(driverId)
-    const routesToShow = JSON.parse(JSON.stringify(routes))
-    
-    activeRouteIndex !== -1 && routesToShow.splice(activeRouteIndex, 1)
-    
-    return (
-      <div className="">
-        <h3>Drivers routes:</h3>
-        <ul>
-        {routesToShow.map((route, index) => (
-          <li key={route._id}>
-            Route #{index}
-
-            <input
-              type="button"
-              value="Show route as line"
-              className="btn active"
-              onClick={() => this.handleRouteLineShow(route.points)}
-            />
-            <input
-              type="button"
-              value="Show route as points"
-              className="btn active"
-              onClick={() => this.handleRouteMarkersShow(route.points)}
-            />
-          </li>
-        ))}
-        </ul>
-      </div>
-    )
-  }
-
-  // TODO: Below functions should go to separate components
-  renderDrivers(drivers) {
-    const { activeDriver } = this.state
-    return drivers.map((driver) => {
-      return (
-      <li key={driver.id}>
-        id: {driver.id}<br/>
-        name: {driver.data.name}<br/>
-        status: {this.getDriverStatus(driver.id)}
-        <input
-          type="button"
-          value={activeDriver === driver.id ? 'UNTRACK' : 'TRACK'}
-          className="btn active"
-          onClick={() => this.setActiveDriver(driver.id)}
-        />
-        {activeDriver === driver.id && (
-          <div>
-            <input
-              type="button"
-              value="Show current location"
-              className="btn active"
-              onClick={() => this.zoomLastPosition(driver.id)}
-            />
-          </div>
-        )}<br/>
-        {this.renderDriverRoutes(driver.id)}
-      </li>)
-    })
-  }
   renderFences(fences) {
     return fences.map((fence, index) => {
       return (
@@ -198,9 +136,10 @@ class InterfaceContainer extends Component {
   render() {
     const {
       mqttStatus,
-      children
+      children,
+      drivers,
+      routes
     } = this.props
-    const driversRender = this.renderDrivers(this.props.drivers)
     const fencesRender = this.renderFences(this.props.fences)
     return (
       <div className="interfaceContainer">
@@ -217,7 +156,16 @@ class InterfaceContainer extends Component {
         </div>
         <div className="interfaceContainer__drivers">
           <h3>Drivers:</h3>
-          {driversRender}
+          <DriversListComponent
+            drivers={drivers}
+            routes={routes}
+            getDriverActiveRoute={this.getDriverActiveRoute}
+            handleRouteShow={this.handleRouteShow}
+            zoomLastPosition={this.zoomLastPosition}
+            activeDriver={this.state.activeDriver}
+            setActiveDriver={this.setActiveDriver}
+            getDriverStatus={this.getDriverStatus}
+          />
         </div>
         <div className="interfaceContainer__fences">
           <h3>Fences:</h3>
