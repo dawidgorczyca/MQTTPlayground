@@ -14,14 +14,17 @@ class InterfaceContainer extends Component {
     super( props );
     this.state = {
       activeDriver: '',
-      driverRoutesIds: []
+      activeRouteId: null,
+      driversRoutesIds: []
     };
   }
   componentWillReceiveProps(nextProps) {
-    this.handleActiveRoad(nextProps.routes)
+    console.log('here1');
+    this.handleActiveRoad(nextProps.routes);
   }
 
   setActiveDriver(driver) {
+    console.log('here2');
     removeAllRoads(mapService.map)
     if(driver === this.state.activeDriver) {
       this.setState( { activeDriver: '' } )
@@ -33,6 +36,7 @@ class InterfaceContainer extends Component {
   handleActiveRoad(routes) {
     const { activeDriver } = this.state
     const activeRoad = this.getDriverActiveRoute(activeDriver)
+    console.log('activeRoad ', activeRoad);
         
     if(activeRoad !== -1) {
       let activeRoadPoints = JSON.parse(JSON.stringify(routes[activeRoad].points))
@@ -49,10 +53,12 @@ class InterfaceContainer extends Component {
   }
 
   getDriverActiveRoute(driverId) {
-    const { routes } = this.props
-    const activeRoute = routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
-    console.log('index ', activeRoute);
-    return activeRoute
+    const { routes, activeRouteId } = this.props
+    if(activeRouteId) {
+      return activeRouteId
+    } else {
+      return routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
+    }
   }
   getDriverStatus(driverId) {
     return this.getDriverActiveRoute(driverId) !== -1 ? 'ACTIVE' : 'UNACTIVE'
@@ -70,6 +76,9 @@ class InterfaceContainer extends Component {
       this.handleZoom(pointData, 14)
     }
   }
+  handleCurrentRoute(){
+    this.setState({activeRouteId: null});
+  }
 
   handleFenceZoom(fenceIndex) {
     if(fenceIndex === 1){
@@ -80,22 +89,27 @@ class InterfaceContainer extends Component {
     }
   }
 
-  getDriverRoutes(driverId){
-    console.log('here')
-    const { routes } = this.props
-    this.setState({driverRoutesIds: []});
-    routes.forEach((route, index)=>{ 
-      if(route.driverId === driverId) {
-        this.setState(prevState => ({
-          driverRoutesIds: [...prevState.driverRoutesIds, index]
-        }))
-      }
-    });
-  }
+  // getDriversRoutes(){
+  //   const { routes } = this.props
+  //   this.setState({driversRoutesIds: {}});
+    
+  //   routes.driverId.forEach((driver)=>{
+  //     driversRoutesIds.push({id: driver})
+  //   });
+
+  //   routes.forEach((route, index)=>{ 
+  //     if(route.driverId === driverId) {
+  //       this.setState(prevState => ({
+  //         driverRoutesIds: [...prevState.driverRoutesIds, index]
+  //       }))
+  //     }
+  //   });
+  // }
 
   // TODO: Below functions should go to separate components
   renderDrivers(drivers) {
     const { activeDriver, driverRoutesIds } = this.state
+    const { routes } = this.props
     return drivers.map((driver) => {
       return (
       <li key={driver.id}>
@@ -106,24 +120,22 @@ class InterfaceContainer extends Component {
           type="button"
           value={activeDriver === driver.id ? 'UNTRACK' : 'TRACK'}
           className="btn active"
-          onClick={() => {this.getDriverRoutes(driver.id); this.setActiveDriver(driver.id)} }
+          onClick={() => {this.setActiveDriver(driver.id)} }
         />
         {activeDriver === driver.id && (
-          <span><input
+          <input
             type="button"
             value="Show current location"
             className="btn active"
             onClick={() => this.zoomLastPosition(driver.id)}
           />
-          {driverRoutesIds.map((id) => {return <button key={id}>{id}</button>})}
-          {/* <input 
-            type="button"
-            value="asd"
-            className="btn active"
-            onClick={() => this.getDriverRoutes(driver.id)}
-          /> */}
-          </span>
         )}
+        {routes.map((route) => {
+          return(
+            route.driverId === driver.id && (
+           <button>asd</button>)
+          )  
+        })}
       </li>)
     })
   }

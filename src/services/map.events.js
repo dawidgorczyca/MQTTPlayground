@@ -3,13 +3,13 @@ function prepareLineString(lineData) {
   const lineString = new window.H.geo.LineString()
 
   lineData.forEach((point) => {
-    console.log('point', point.latitude, point.longitude)
+    // console.log('point', point.latitude, point.longitude)
     if(point.latitude && point.longitude) {
       const lat = parseFloat(point.latitude)
       const lng = parseFloat(point.longitude)
-      console.log('lat, lng',lat, lng)
+      // console.log('lat, lng',lat, lng)
       if(lat !== NaN && lng !== NaN) {
-        console.log('point',{lat: lat, lng: lng})
+        // console.log('point',{lat: lat, lng: lng})
         lineString.pushPoint({lat: lat, lng: lng})
       }
     }
