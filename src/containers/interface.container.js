@@ -1,31 +1,33 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import { axiosDriversGet } from '../store/actions/axios.actions'
+
 import map from '../services/map.service' 
 import { addPolylineToMap } from '../services/map.events'
 
 import './interface.container.css'
 
 class InterfaceContainer extends Component {
+  renderDrivers(drivers) {
+    return drivers.map((driver) => {
+      return (<li key={driver.id}>{driver.id}</li>)
+    })
+  }
+  getCollection(collectionName) {
+    this.props.dispatch(axiosDriversGet())
+  }
   render() {
     const {
-      drivers,
-      status,
+      mqttStatus,
       children
     } = this.props
     return (
       <div className="interfaceContainer">
         <div className="interfaceContainer__status">
-          Connection status: <span className={status}>{status}</span>
+          Connection status: <span className={mqttStatus}>{mqttStatus}</span>
         </div>
-        <div className="interfaceContainer__drivers">
-          <h3>Active drivers:</h3>
-          <ul>
-            {drivers.map((driver) => {
-              return (<li key={driver.id}>{driver.id}</li>)
-            })}
-          </ul>
-        </div>
+        <button onClick={() => this.getCollection('drivers')} >Get collection</button>
         <div className="interfaceContainer__content">
           {children}
         </div>
@@ -36,10 +38,7 @@ class InterfaceContainer extends Component {
 
 const mapStateToProps = state => {
   return {
-    drivers: state.tracking.drivers,
-    status: state.connection.status,
-    fences: state.areas.areas,
-    routes: state.areas.routes
+    mqttStatus: state.config.mqttStatus
   }
 }
 

@@ -3,8 +3,8 @@ import "./Driver.css";
 import { MqttService } from "./Mqtt.service";
 import mockedGpsLocations from "./mockedGpsLocations.json";
 
-const START_TEXT = "Start gathering GPS data";
-const STOP_TEXT = "Stop gathering GPS data";
+const START_TEXT = "Start new route";
+const STOP_TEXT = "Finish route";
 const SENDING_GPS_GAP = 3;
 
 class Driver extends React.Component {
@@ -32,27 +32,30 @@ class Driver extends React.Component {
 
   handleDriverStartedStateChange = hasDriverStartedState => {
     if (hasDriverStartedState === true) {
-      this.state.shouldDataBeMocked ? this.mockGpsData() : this.gatherGpsData();
+      this.mockGpsStart()
     } else {
-      this.stopSendingGpsData();
+      this.stopSendingGpsData()
+      setTimeout(() => {
+        this.mockGpsFinish()
+      }, 1000)
     }
   };
 
-  gatherGpsData = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position =>
-          (this.sendPositionInterval = setInterval(
-            (...props) => 
-            MqttService.sendPosition(...props).then(() => 
-              this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
-            SENDING_GPS_GAP * 1000,
-            position,
-            this.state.driverId
-          ))
-      );
-    }
-  };
+  // gatherGpsData = () => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       position =>
+  //         (this.sendPositionInterval = setInterval(
+  //           (...props) => 
+  //           MqttService.sendPosition(...props).then(() => 
+  //             this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
+  //           SENDING_GPS_GAP * 1000,
+  //           position,
+  //           this.state.driverId
+  //         ))
+  //     );
+  //   }
+  // };
 
   mockGpsData = () => {
     const interval = SENDING_GPS_GAP * 1000;
@@ -61,24 +64,32 @@ class Driver extends React.Component {
       (location, index) =>
         (this.timeouts[index] = setTimeout(
           (...props) => 
-            MqttService.sendMockedPosition(...props).then(() => 
+            MqttService.sendMockedPosition(...props, this.state.driverId, '').then(() => 
               this.setState((prevState) => ({ sentEvents: prevState.sentEvents + 1 }))),
           index * interval,
           location.latitude,
           location.longitude,
-          this.state.driverId
+          this.state.driverId,
+          ''
         ))
     );
   };
+
+  mockGpsStart = async () => {
+    await MqttService.sendMockedPosition('', '', this.state.driverId, 'ACTIVE')
+    setTimeout(() => {
+      this.mockGpsData()
+    }, 3000)
+  }
 
   mockGpsOnce = () => {
     const location = mockedGpsLocations[0]
     MqttService.sendMockedPosition(location.latitude, location.longitude, this.state.driverId)
   }
 
-  finishRoute = () => {
+  mockGpsFinish = () => {
     const location = mockedGpsLocations[0]
-    MqttService.sendMockedPosition(location.latitude, location.longitude, this.state.driverId, true)
+    MqttService.sendMockedPosition('', '', this.state.driverId, 'FINISH')
   }
 
   stopSendingGpsData = () => {
@@ -86,12 +97,15 @@ class Driver extends React.Component {
     this.timeouts.forEach(t => clearTimeout(t));
   };
 
-  handleGpsGatheringButton = () => {
+  registerDriver = () => {
     MqttService.activateDriver(this.state.driverId, this.state.driverName)
-    // this.setState(
-    //   prevState => ({ hasDriverStarted: !prevState.hasDriverStarted }),
-    //   () => this.handleDriverStartedStateChange(this.state.hasDriverStarted)
-    // );
+  }
+
+  handleGpsGatheringButton = () => {
+    this.setState(
+      prevState => ({ hasDriverStarted: !prevState.hasDriverStarted }),
+      () => this.handleDriverStartedStateChange(this.state.hasDriverStarted)
+    );
   };
 
   handleUpdateDriverBtn = () => {
@@ -149,23 +163,17 @@ class Driver extends React.Component {
           }
           onClick={() => this.handleGpsGatheringButton()}
         />
+        <input 
+          type="button"
+          value="Register driver"
+          className="btn active"
+          onClick={() => this.registerDriver()}
+        />
         <input
           type="button"
           value="Edit current driver"
           className="btn active"
           onClick={() => this.handleUpdateDriverBtn()}
-        />
-        <input
-          type="button"
-          value="Route once"
-          className="btn active"
-          onClick={() => this.mockGpsOnce()}
-        />
-        <input
-          type="button"
-          value="Finish route"
-          className="btn active"
-          onClick={() => this.finishRoute()}
         />
         
         <div className="counter">Sent events: {this.state.sentEvents}</div>

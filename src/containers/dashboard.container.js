@@ -9,14 +9,15 @@ import {
 
 import subscribeMQTT from "../store/subscriber"
 
-import trackingReducer from "../store/reducers/tracking.reducer"
-import connectionStatusReducer from '../store/reducers/connectionStatus.reducer'
-import areasReducer from '../store/reducers/areas.reducer'
-import driversMiddleware from "../store/middlewares/drivers.middleware"
-import areasMiddleware from '../store/middlewares/areas.middleware'
-import axiosMiddleware from '../store/middlewares/axios.middleware'
+import driversReducer from "../store/reducers/drivers.reducer"
+import routesReducer from "../store/reducers/routes.reducer"
+import fencesReducer from "../store/reducers/fences.reducer"
+import configReducer from "../store/reducers/config.reducer"
 
-import { areasCheck } from '../store/reducers/areas.reducer'
+import driversMiddleware from "../store/middlewares/drivers.middleware"
+import fencesMiddleware from '../store/middlewares/fences.middleware'
+import routesMiddleware from '../store/middlewares/routes.middleware'
+import axiosMiddleware from '../store/middlewares/axios.middleware'
 
 import InterfaceContainer from './interface.container'
 import MapComponent from '../components/map.component'
@@ -26,25 +27,27 @@ import './dashboard.container.css'
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 const appReducer = combineReducers( {
-  tracking: trackingReducer,
-  connection: connectionStatusReducer,
-  areas: areasReducer
+  config: configReducer,
+  drivers: driversReducer,
+  routes: routesReducer,
+  fences: fencesReducer
 } );
 
 export const store = createStore(
   appReducer,
   composeEnhancers(
     applyMiddleware(
+      axiosMiddleware,
       driversMiddleware,
-      areasMiddleware,
-      axiosMiddleware
+      routesMiddleware,
+      fencesMiddleware
     )
   )
 )
 
 class DashboardContainer extends Component {
   componentDidMount(){
-    store.dispatch(areasCheck())
+    // store.dispatch(areasCheck())
   }
   render() {
     subscribeMQTT()

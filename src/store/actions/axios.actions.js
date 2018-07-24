@@ -1,6 +1,9 @@
 export const AXIOS_DRIVERS = 'axios/DRIVERS'
 export const AXIOS_AREAS = 'axios/AREAS'
 export const AXIOS_ROUTE_BY_ID = 'axios/ROUTE_BY_ID'
+export const AXIOS_DRIVERS_GET = 'axios/DRIVERS_GET'
+export const AXIOS_ROUTES_GET = 'axios/ROUTES_GET'
+export const AXIOS_FENCES_GET = 'axios/FENCES_GET'
 
 export function axiosDrivers() {
   return {
@@ -28,6 +31,36 @@ export function axiosRouteById(entityId) {
       method: 'get',
       url:`/routeAfterMatching/${entityId}`,
       entityId: entityId 
+    }
+  }
+}
+
+export function axiosDriversGet() {
+  return {
+    type: AXIOS_DRIVERS_GET,
+    payload: {
+      method: 'get',
+      url: `/drivers`
+    }
+  }
+}
+
+export function axiosRoutesGet() {
+  return {
+    type: AXIOS_ROUTES_GET,
+    payload: {
+      method: 'get',
+      url: `/routes`
+    }
+  }
+}
+
+export function axiosFencesGet() {
+  return {
+    type: AXIOS_FENCES_GET,
+    payload: {
+      method: 'get',
+      url: `/fences`
     }
   }
 }

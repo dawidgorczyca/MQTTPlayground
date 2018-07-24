@@ -1,7 +1,7 @@
 const mosca = require('mosca')
 require('dotenv-safe').config();
 const eventBus = require('./events.bus')
-const dbBackend = require('../helper/backend.events')
+const dbBackend = require('../backend/backend.events')
 
 
 // const SECURE_KEY = __dirname + '/tls-key.pem';

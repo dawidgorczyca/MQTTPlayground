@@ -10,8 +10,8 @@ function alterCollection(config, docId, docData, collectionName, cb) {
       await collection.findOneAndUpdate(docId, {$set: docData})
 
       if(cb) {
-        const createdItem = await collection.findOne(docData)
-        await cb(createdItem)
+        const alteredItem = await collection.findOne(docData)
+        await cb(alteredItem)
       }
       client.close()
     } catch(err) {
@@ -38,6 +38,23 @@ function findInCollection(config, doc, collectionName, cb) {
   })
 }
 
+function findAllInCollection(config, doc, collectionName, cb) {
+  const { dbUrl, dbName } = config
+  
+  MongoClient.connect(dbUrl, {useNewUrlParser: true}, async (err, client) => {
+    try {
+      const db = client.db(dbName)
+      const collection = db.collection(collectionName)
+      const foundItems = await collection.find(doc).toArray()
+      await cb(foundItems)
+      client.close()
+    } catch(err) {
+      console.log(err)
+      return err
+    }
+  })
+}
+
 function populateCollection(config, doc, collectionName, cb) {
   const { dbUrl, dbName } = config
   MongoClient.connect(dbUrl, {useNewUrlParser: true}, async (err, client) => {
@@ -51,6 +68,22 @@ function populateCollection(config, doc, collectionName, cb) {
         await cb(createdItem)
       }
       client.close()
+    } catch(err) {
+      console.log(err)
+      return err
+    }
+  })
+}
+
+function getCollection(config, collectionName, cb) {
+  const { dbUrl, dbName } = config
+  MongoClient.connect(dbUrl, {useNewUrlParser: true}, async (err, client) => {
+    try {
+      const db = client.db(dbName)
+      const collection = await db.collection(collectionName)
+      const collectionData = await collection.find({}).toArray()
+      
+      cb(collectionData)
     } catch(err) {
       console.log(err)
       return err
@@ -92,3 +125,5 @@ module.exports.findInCollection = findInCollection
 module.exports.populateCollection = populateCollection
 module.exports.initializeCollections = initializeCollections
 module.exports.alterCollection = alterCollection
+module.exports.getCollection = getCollection
+module.exports.findAllInCollection = findAllInCollection

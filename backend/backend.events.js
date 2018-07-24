@@ -2,7 +2,9 @@ const {
   initializeCollections,
   populateCollection,
   findInCollection,
-  alterCollection
+  alterCollection,
+  getCollection,
+  findAllInCollection
 } = require('./backend.methods')
 const {
   driverAttributes
@@ -12,6 +14,8 @@ const driverInitState = {
   routes: []
 }
 const backendPublished = require('./backend.publisher')
+const { getRandomColor } = require('./backend.tools')
+const heremap = require('./heremapHelper')
 
 // Backend side only configuration for broker collection
 process.env.DB_USER            = 'inqu'
@@ -83,7 +87,7 @@ async function createNewRoute(routeData) {
 function mergeRoute(existingRoute, routeData) {
   const output = {
     ...existingRoute,
-    previousEvent: prepareRouteTimeStart(routeData.points[0]),
+    status: routeData.status ? routeData.status : existingRoute.status,
     points: existingRoute.points.concat(routeData.points)
   }
   if(routeData.timeEnd) {
@@ -111,25 +115,28 @@ async function editRoute(existingRoute, routeData) {
     mergeRoute(existingRoute, routeData),
     'routes',
     (alteredRoute) => {
-      backendPublished.events(alteredRoute)
+      backendPublished.events.routeEdit(alteredRoute)
     }
   )
 }
 
 async function insertRoute(driverId, routeData) {
-  // HERE FIX IT AFTER SETTING UP FRONTEND TO
-  // sent previous time and start time
   const routeIdentifier = {
-    driverId: routeData.driverId,
-    timeStart: routeData.timeStart,
-    previousEvent: prepareRouteTimeStart(routeData.previousEvent ? routeData.previousEvent : routeData.points[0].timestamp)
+    driverId: routeData.driverId
   }
-  await findInCollection(dbConfig,
+  await findAllInCollection(dbConfig,
     routeIdentifier,
     'routes',
-    async (existingRoute) => {
-      if( existingRoute && !existingRoute.timeEnd ){
-        editRoute(existingRoute, routeData)
+    async (existingRoutes) => {
+      console.log('existingRoutes', existingRoutes)
+      if(existingRoutes.length) {
+        const activeIndex = existingRoutes.findIndex(route => route.status === 'ACTIVE')
+        console.log('activeIndex',activeIndex)
+        if(activeIndex !== -1) {
+          editRoute(existingRoutes[activeIndex], routeData)    
+        } else {
+          createNewRoute(routeData)
+        }
       } else {
         createNewRoute(routeData)
       }
@@ -152,6 +159,7 @@ async function insertDriver(driverId, driverData) {
           {
             id: driverId,
             ...driverInitState,
+            color: getRandomColor(),
             data: {
               ...dataConverted
             }
@@ -162,11 +170,12 @@ async function insertDriver(driverId, driverData) {
       } else {
         await alterCollection(
           dbConfig,
+          { _id: driver._id },
           { 
             ...driver,
-            ...driverData
+            status: 'edited',
+            data: dataConverted
           },
-          dataConverted,
           'drivers',
           (updatedDriver) => backendPublished.events.driverEdit(updatedDriver)
         )
@@ -174,9 +183,53 @@ async function insertDriver(driverId, driverData) {
   })
 }
 
+async function insertFence(fenceData) {
+  await populateCollection(
+    dbConfig,
+    {
+      raw: fenceData
+    },
+    'fences',
+    (newFence) => backendPublished.events.fenceNew(newFence)
+  )
+}
+
+async function getFromDb(collectionName, cb) {
+  try {
+    await getCollection(
+      dbConfig,
+      collectionName,
+      (collectionFound) => cb(collectionFound)
+    )
+  } catch(err) {
+    console.log(err)
+    return err
+  }
+}
+
+async function getFromCollection(collectionName, item, cb) {
+  try {
+    await findInCollection(
+      dbConfig,
+      item,
+      collectionName,
+      (itemFound) => cb(itemFound)
+    )
+  } catch(err) {
+    console.log(err)
+    return err
+  }
+}
+
 async function initBackend() {
   try {
     await initializeCollections(dbConfig)
+    await heremap.getPaidAreas(data => {
+      data.forEach((fenceData) => {
+        insertFence(fenceData)
+      })
+      console.log(data)
+    })
   } catch(e) {
     console.log(e)
   }
@@ -184,6 +237,9 @@ async function initBackend() {
 
 module.exports.dbEvents = {
   insertDriver,
-  insertRoute
+  insertRoute,
+  insertFence,
+  getFromDb,
+  getFromCollection
 }
 module.exports.init = initBackend

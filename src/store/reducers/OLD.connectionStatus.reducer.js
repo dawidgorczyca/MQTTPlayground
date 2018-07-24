@@ -1,4 +1,4 @@
-import objectAssign from 'object-assign'
+import objectAssign from '../../../../../Library/Caches/typescript/2.9/node_modules/@types/object-assign'
 
 const CONNECTION_STATUS = 'connection/status'
 

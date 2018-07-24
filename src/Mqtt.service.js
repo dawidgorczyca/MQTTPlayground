@@ -50,10 +50,11 @@ export const MqttService = (function() {
    * @param {string} longitude
    * @param {string} driverId
    */
-  const sendMockedPosition = async (latitude, longitude, driverId, routeFinish) => {
+  const sendMockedPosition = async (latitude, longitude, driverId, routeStatus) => {
+    console.log('sendMockedPosition',latitude, longitude, driverId, routeStatus)
     return await publishMessage({
       topic: `ROUTES/${driverId}/UPDATE`,
-      message: `${latitude}|${longitude}|${Date.now()}|${routeFinish ? routeFinish : ''}`,
+      message: `${latitude}|${longitude}|${Date.now()}|${routeStatus ? routeStatus : ''}`,
       driverId
     });
   };

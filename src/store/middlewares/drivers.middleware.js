@@ -1,45 +1,55 @@
+import { subActionNames } from '../actions/subscriber.actions'
 import {
-  MESSAGE,
-  addDriver,
-  ADD_DRIVER
-} from '../reducers/tracking.reducer'
-import { driverLocation } from '../reducers/driver.reducer'
+  driversTopics
+} from '../reducers/drivers.constants'
+import {
+  driversSet,
+  driversEdit,
+  driversSetAll
+} from '../actions/drivers.actions'
+import { AXIOS_DRIVERS_GET } from '../actions/axios.actions'
+
+import { driverLocation } from '../reducers/OLD.driver.reducer'
 import { axiosRouteById } from '../actions/axios.actions'
-import { getRandomColor } from '../../services/color.service'
 
-export function findExistingDriver(driver, list, attrName) {
-  return list.findIndex(x => x[attrName] === driver)
+function handleDriversSet(store, action) {
+  store.dispatch(driversSet(action.payload))
 }
 
-function prepareLocationInfo(msg) {
-  return msg.split('|')
+function handleDriversEdit(store, action) {
+  const existingDrivers = store.getState().drivers.drivers
+  const driverIndex = existingDrivers.findIndex(driver => driver._id === action.payload._id)
+  
+  if(driverIndex !== -1) {
+    store.dispatch(driversEdit(action.payload, driverIndex))
+  }
 }
 
-export default store => next => action => {
-  if(action.type === MESSAGE) {
-    console.log('action',action)
-    const currentState = store.getState().tracking;
+function handleDriversEvents(store, action) {
+  const topic = action.topic.split('/')
 
-    const existing = (action.sender && currentState.drivers) ? findExistingDriver(action.sender, currentState.drivers, 'id') : undefined
-    const msg = prepareLocationInfo(action.recieved_msg)
-    const loc = {
-      loc: msg[0],
-      time: msg[1]
-    }
-    
-    if(existing === -1){
-      store.dispatch(addDriver({
-        id: action.sender,
-        locations: [loc]
-      }))
-    } else {
-      store.dispatch(driverLocation(loc, existing))
+  if(topic[2] === driversTopics.new) {
+    handleDriversSet(store, action)
+  } else if(topic[2] === driversTopics.edit) {
+    handleDriversEdit(store, action)
+  }
+
+}
+
+export default store => next => async (action) => {
+  if(action.type === subActionNames.SUBSCRIBER_UPDATE) {
+    try {
+      const topic = action.topic.split('/')
+      if(topic[1] === driversTopics.main){
+        await handleDriversEvents(store, action)
+      }
+    } catch(err) {
+      console.log(err)
+      return err
     }
   }
-  // if(action.type === ADD_DRIVER){
-  //   setInterval(() => {
-  //     store.dispatch(axiosRouteById(action.driver.id))
-  //   }, 3000)
-  // }
+  if(action.type === `RESPONSE/${AXIOS_DRIVERS_GET}`) {
+    store.dispatch(driversSetAll(action.payload.data))
+  }
   next(action)
 }

@@ -7,38 +7,6 @@ const dbConfig = {
     dbName: process.env.DB_NAME
 }
 
-function initializeCollections(config) {
-    const { dbUrl, dbUser, dbMainCollection, dbName } = config
-
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, client) => {
-        if (err) {
-            console.log(err)
-            return err
-        }
-        const db = client.db(dbName)
-        db.createCollection('drivers', (collection, err) => {
-            if (err) {
-                console.log(err)
-                return err
-            }
-        })
-        db.createCollection('fences', (collection, err) => {
-            if (err) {
-                console.log(err)
-                return err
-            }
-        })
-        db.createCollection('routes', (collection, err) => {
-            if (err) {
-                console.log(err)
-                return err
-            }
-        })
-    })
-}
-
-module.exports.initializeCollections = initializeCollections
-
 module.exports.getAllData = (cb) => {
     const { dbUrl, dbUser, dbMainCollection } = dbConfig
 

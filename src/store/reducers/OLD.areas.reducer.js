@@ -1,6 +1,6 @@
 import update from 'immutability-helper'
 
-import fenceReducer from './fence.reducer'
+import fenceReducer from './OLD.fence.reducer'
 
 export const AREAS_ADD = 'areas/ADD'
 export const AREAS_RESET = 'areas/RESET'

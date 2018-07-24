@@ -1,4 +1,4 @@
-export function getRandomColor() {
+function getRandomColor() {
   const letters = '0123456789ABCDEF'
   let color = '#'
   for (var i = 0; i < 6; i++) {
@@ -6,3 +6,5 @@ export function getRandomColor() {
   }
   return color
 }
+
+module.exports.getRandomColor = getRandomColor

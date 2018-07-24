@@ -1,24 +1,31 @@
 import mqtt from 'mqtt'
-import {store} from '../containers/dashboard.container'
-import {msg} from './reducers/tracking.reducer'
-import {connectionStatus} from './reducers/connectionStatus.reducer'
+import { store } from '../containers/dashboard.container'
+import { subscriberUpdate } from './actions/subscriber.actions'
+import {
+  axiosDriversGet,
+  axiosRoutesGet,
+  axiosFencesGet
+} from './actions/axios.actions'
+import { connectionMqttStatus } from './actions/config.actions'
 
 
 function subscribeMQTT() {
   const client = mqtt.connect('mqtt://localhost:1887')
 
   client.on('connect',() =>{
-    store.dispatch(connectionStatus('online'))
+    store.dispatch(axiosDriversGet())
+    store.dispatch(axiosRoutesGet())
+    store.dispatch(axiosFencesGet())
+    store.dispatch(connectionMqttStatus(true))
   })
   client.on('offline',() =>{
-    store.dispatch(connectionStatus('offline'))
+    store.dispatch(connectionMqttStatus(false))
   })
   client.on('connect', () => {
     client.subscribe('UPDATE/+/+')
   })
   client.on('message', (topic, message) => {
-    console.log(topic, JSON.parse(message.toString()))
-    store.dispatch(msg(message.toString(), topic.split('/')[2]))
+    store.dispatch(subscriberUpdate(topic, message.toString()))
   })
 }
 

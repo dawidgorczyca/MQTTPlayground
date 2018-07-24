@@ -1,13 +1,13 @@
 TODO:
--handle broker events on redux side
--send correct data for routes from frontend
--set up the Driver client with mocking a route
--plug in hereMap to frontend (copy)
+-handle broker events on redux side X
+-send correct data for routes from frontend X
+-set up the Driver client with mocking a route X
+-plug in hereMap to frontend (copy) 
 -pipeline for calculating route on frontend (copy)
 -render the driver route as the data goes to frontend
--addNew event for fences on backend
+-addNew event for fences on backend X
 -handle fences on frontend
--add fences as an option to look at on route updating
+-add fences as an option to look at on route updating 
 -handle fence collisions in routes
 -handle fence collisions on frontend
 -set price input globally for now, per fence later on

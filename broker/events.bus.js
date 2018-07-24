@@ -1,4 +1,4 @@
-const { dbEvents } = require('../helper/backend.events')
+const { dbEvents } = require('../backend/backend.events')
 
 function validateClientId(id) {
   const output = id
@@ -7,7 +7,7 @@ function validateClientId(id) {
     return output
   } else {
     console.log('[ERROR] EventBus | getClientId | No clientID specified')
-    return false
+    return null
   }
 }
 
@@ -17,9 +17,11 @@ function handleDriversEvents(eventInfo, eventData) {
     insertDriver
   } = dbEvents
 
-  if(eventInfo[2] === 'ADD' || eventInfo[2] === 'UPDATE'){
-    const data = eventData.payload.toString()
-    insertDriver(clientId, data)
+  if(clientId) {
+    if(eventInfo[2] === 'ADD' || eventInfo[2] === 'UPDATE'){
+      const data = eventData.payload.toString()
+      insertDriver(clientId, data)
+    }
   }
 }
 
@@ -40,9 +42,9 @@ function handleRoutesEvents(eventInfo, eventData) {
   }
 
   if(data[3] && data[3].length){
-    routeObj.timeEnd = data[3]
+    routeObj.status = data[3]
   }
-  insertRoute(clientId, routeObj)
+  clientId && insertRoute(clientId, routeObj)
 }
 
 function eventBus(eventInfo, eventData) {
