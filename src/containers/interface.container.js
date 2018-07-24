@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import axios from 'axios'
 
 import './interface.container.css'
 
@@ -11,13 +12,20 @@ import {
   removeMarkersRoads
 } from '../services/map.events'
 
+import { routesEdit } from '../store/actions/routes.actions'
+
 import DriversListComponent from '../components/drivers.component'
+import FencesComponent from '../components/fences.component'
 
 class InterfaceContainer extends Component {
   constructor( props ) {
     super( props );
     this.state = {
-      activeDriver: ''
+      activeDriver: '',
+      zoomLat: '',
+      zoomLong: '',
+      zoomZoom: '',
+      fencesPrice: 0
     };
 
     this.getDriverActiveRoute = this.getDriverActiveRoute.bind(this)
@@ -25,6 +33,8 @@ class InterfaceContainer extends Component {
     this.zoomLastPosition = this.zoomLastPosition.bind(this)
     this.setActiveDriver = this.setActiveDriver.bind(this)
     this.getDriverStatus = this.getDriverStatus.bind(this)
+    this.handleFenceZoom = this.handleFenceZoom.bind(this)
+    this.calculateRoad = this.calculateRoad.bind(this)
   }
   componentWillReceiveProps(nextProps) {
     nextProps.routes && this.handleActiveRoad(nextProps.routes)
@@ -118,29 +128,45 @@ class InterfaceContainer extends Component {
     }
   }
 
-  renderFences(fences) {
-    return fences.map((fence, index) => {
-      return (
-        <li key={fence._id} onClick={() => this.handleFenceZoom(index)}>
-          Fence #{index}
-          <input
-            type="button"
-            value="Show"
-            className="btn active"
-            onClick={() => this.handleFenceZoom(index)}
-          />
-        </li>
-      )
-    })
+  calculateRoad(road) {
+    const { dispatch, routes } = this.props
+    if(this.state.fencesPrice !== 0){
+      axios.post('http://localhost:8080/matchroute', {
+        ...road,
+        price: this.state.fencesPrice
+      })
+      .then(( response ) => {
+        const routeIndex = routes.findIndex(route => route._id === road._id)
+        dispatch(routesEdit(
+          {
+            ...road,
+            cost: response.data.cost
+          },
+          routeIndex
+        ))
+      })
+    }
   }
+
+  handleGenericInput(e) {
+    this.setState({ [e.target.name]: e.target.value})
+  }
+
   render() {
     const {
       mqttStatus,
       children,
       drivers,
-      routes
+      routes,
+      fences
     } = this.props
-    const fencesRender = this.renderFences(this.props.fences)
+
+    const {
+      zoomLat,
+      zoomLong,
+      zoomZoom
+    } = this.state
+    
     return (
       <div className="interfaceContainer">
         <div className="interfaceContainer__status">
@@ -152,6 +178,44 @@ class InterfaceContainer extends Component {
             value="Clear map selection"
             className="btn active"
             onClick={() => removeMarkersRoads(mapService.map)}
+          />
+          <br/>
+          <input
+            name="zoomZoom"
+            type="text"
+            value={this.state.zoomZoom}
+            placeholder="zoom level"
+            onChange={(e) => this.handleGenericInput(e)}
+          />
+          <input
+            name="zoomLat"
+            type="text"
+            value={this.state.zoomLat}
+            placeholder="latitude"
+            onChange={(e) => this.handleGenericInput(e)}
+          />
+          <input
+            name="zoomLong"
+            type="text"
+            value={this.state.zoomLong}
+            placeholder="longitude"
+            onChange={(e) => this.handleGenericInput(e)}
+          />
+          <input
+            type="button"
+            value="Zoom To"
+            onClick={() => this.handleZoom({
+              "latitude": zoomLat,
+              "longitude": zoomLong
+            }, zoomZoom)}
+          />
+          <br/><br/>
+          <h3>Fences Price per meter:</h3>
+          <input
+            type="text"
+            name="fencesPrice"
+            value={this.state.fencesPrice}
+            onChange={(e) => this.handleGenericInput(e)}
           />
         </div>
         <div className="interfaceContainer__drivers">
@@ -165,11 +229,15 @@ class InterfaceContainer extends Component {
             activeDriver={this.state.activeDriver}
             setActiveDriver={this.setActiveDriver}
             getDriverStatus={this.getDriverStatus}
+            calculateRoad={this.calculateRoad}
           />
         </div>
         <div className="interfaceContainer__fences">
           <h3>Fences:</h3>
-          {fencesRender}
+          <FencesComponent
+            fences={fences}
+            handleFenceZoom={this.handleFenceZoom}
+          />
         </div>
         <div className="interfaceContainer__content">
           {children}

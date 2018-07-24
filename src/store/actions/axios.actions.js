@@ -4,6 +4,7 @@ export const AXIOS_ROUTE_BY_ID = 'axios/ROUTE_BY_ID'
 export const AXIOS_DRIVERS_GET = 'axios/DRIVERS_GET'
 export const AXIOS_ROUTES_GET = 'axios/ROUTES_GET'
 export const AXIOS_FENCES_GET = 'axios/FENCES_GET'
+export const AXIOS_MATCH_ROUTE = 'axios/MATCH_ROUTE'
 
 export function axiosDrivers() {
   return {

@@ -98,6 +98,20 @@ function getCoordinates(dbData) {
     });
 }
 
+module.exports.matchSingleRoute = async (data, cb) => {
+    const gpxFile = await prepareGpxFile(data.route)
+    const target = 'http://rme.cit.api.here.com/2/matchroute.json?routemode=car&app_id=' + appId + '&app_code=' + appCode
+
+    const ws = await request.post(target, async (error, response, body) => {
+        const result = await parseHeremapMatchingResponse(JSON.parse(body))
+        const points = await getPointsInArea(result)
+        const calculatedInfo = await calculate(points, data.price)
+        cb(calculatedInfo)
+    });
+    ws.write(gpxFile)
+    ws.end()
+}
+
 function matchRoute(data, cb) {
     const gpxFile = prepareGpxFile(data);
     var target = 'http://rme.cit.api.here.com/2/matchroute.json?routemode=car&app_id=' + appId + '&app_code=' + appCode;
@@ -138,11 +152,13 @@ function parseHeremapMatchingResponse(data) {
 
 function prepareGpxFile(data) {
 
-    const properData = data.filter(data => (data[0] !== 'undefined') && (data[1] !== 'undefined'));
+    const properData = data.filter(data => (data.latitude !== 'undefined') && (data.longitude !== 'undefined'));
 
     const points = properData.map(coordinates => {
-        return new Point(coordinates[0], coordinates[1])
+        return new Point(coordinates.latitude, coordinates.longitude)
     });
+
+    // console.log('prepareGpx points', points)
      
     const gpxData = new GarminBuilder();
     gpxData.setSegmentPoints(points);
@@ -173,11 +189,11 @@ function checkPointsInArea(points, geofenceId, radius) {
         var url = 'https://gfe.cit.api.here.com/2/search/proximity.json?app_id=' + appId + '&app_code=' + appCode + '&layer_ids=' + geofenceId + '&proximity=' + pointsString;
     
         request(url, (error, response, body) => {
-            var results = JSON.parse(body).results || [];
+            var results = JSON.parse(body).results || []
             results.forEach( (result, index) => {
-                points[index][3] = !!result.geometries.length;
-            });
-            resolve(points);
+                points[index][3] = !!result.geometries.length
+            })
+            resolve(points)
         });
     });
 }
@@ -192,7 +208,7 @@ function prepareCoordinatesString(coordinates, radius){
     return result.join(';');
 }
 
-function calculate(route) {
+function calculate(route, costPerMeter) {
     let wholeDistance = 0;
     let distanceInArea = 0;
 
@@ -201,8 +217,8 @@ function calculate(route) {
         distanceInArea += (point[2] && point[3]) ? point[2] : 0;
     });
 
-    const costPerMeter = 0.002;
-    let cost = distanceInArea * costPerMeter;
+    const costDefined = costPerMeter ? costPerMeter : 0.002;
+    let cost = distanceInArea * costDefined;
 
     wholeDistance = +parseFloat(wholeDistance).toFixed(2);
     distanceInArea = +parseFloat(distanceInArea).toFixed(2);

@@ -9,9 +9,6 @@ import {
 } from '../actions/drivers.actions'
 import { AXIOS_DRIVERS_GET } from '../actions/axios.actions'
 
-import { driverLocation } from '../reducers/OLD.driver.reducer'
-import { axiosRouteById } from '../actions/axios.actions'
-
 function handleDriversSet(store, action) {
   store.dispatch(driversSet(action.payload))
 }

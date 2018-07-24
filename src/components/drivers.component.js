@@ -5,18 +5,20 @@ class DriversListComponent extends Component {
     const {
       routes,
       getDriverActiveRoute,
-      handleRouteShow
+      handleRouteShow,
+      calculateRoad
     } = this.props
     const activeRouteIndex = getDriverActiveRoute(driverId)
     const routesToShow = JSON.parse(JSON.stringify(routes))
     
     activeRouteIndex !== -1 && routesToShow.splice(activeRouteIndex, 1)
+    const driverRoutes = routesToShow.filter(route => route.driverId === driverId)
     
     return (
       <div className="interface--drivers--routes ">
         <h3>Driver previous routes:</h3>
         <ul>
-        {routesToShow.map((route, index) => (
+        {driverRoutes.map((route, index) => (
           <li key={route._id}>
             Route #{index}
 
@@ -32,6 +34,18 @@ class DriversListComponent extends Component {
               className="btn active"
               onClick={() => handleRouteShow(route.points, 'markers')}
             />
+            <input
+              type="button"
+              value="Calculate road cost"
+              className="btn active"
+              onClick={() => calculateRoad(route)}
+            />
+
+            {route.cost && (
+              <span>
+                Cost: <b>{route.cost}</b> per meter
+              </span> 
+            )}
           </li>
         ))}
         </ul>
