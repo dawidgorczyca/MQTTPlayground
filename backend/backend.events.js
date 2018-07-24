@@ -225,6 +225,7 @@ async function initBackend() {
   try {
     await initializeCollections(dbConfig)
     await heremap.getPaidAreas(data => {
+      console.log('paid areas data', data)
       data.forEach((fenceData) => {
         insertFence(fenceData)
       })

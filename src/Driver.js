@@ -16,6 +16,7 @@ class Driver extends React.Component {
       driverName: '',
       connected: false,
       sentEvents: 0,
+      mockedGpsLocations: ''
     };
     this.timeouts = [];
   }
@@ -58,6 +59,7 @@ class Driver extends React.Component {
   // };
 
   mockGpsData = () => {
+    const { mockedGpsLocations } = this.state
     const interval = SENDING_GPS_GAP * 1000;
 
     mockedGpsLocations.forEach(
@@ -83,11 +85,13 @@ class Driver extends React.Component {
   }
 
   mockGpsOnce = () => {
+    const { mockedGpsLocations } = this.state
     const location = mockedGpsLocations[0]
     MqttService.sendMockedPosition(location.latitude, location.longitude, this.state.driverId)
   }
 
   mockGpsFinish = () => {
+    const { mockedGpsLocations } = this.state
     const location = mockedGpsLocations[0]
     MqttService.sendMockedPosition('', '', this.state.driverId, 'FINISH')
   }
@@ -111,6 +115,21 @@ class Driver extends React.Component {
   handleUpdateDriverBtn = () => {
     MqttService.updateDriver(this.state.driverId, this.state.driverName)
   }
+
+  updateMockedData = e => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.readAsText(e.target.files[0]);
+      reader.onload = () => {
+        try {
+          const mockedGpsLocations = JSON.parse(reader.result);
+          this.setState({ mockedGpsLocations, errorMessage: "" });
+        } catch (e) {
+          this.setState({errorMessage: "Invalid JSON file"});
+        }
+      };
+    }
+  };
 
   render = () => {
     return (
@@ -144,17 +163,6 @@ class Driver extends React.Component {
             onChange={e => this.setState({ driverName: e.currentTarget.value })}
           />
         </div>
-        <label htmlFor="mock-cb">Mock data</label>
-        <input
-          type="checkbox"
-          id="mock-cb"
-          onClick={() =>
-            this.setState({
-              shouldDataBeMocked: !this.state.shouldDataBeMocked
-            })
-          }
-          checked={this.state.shouldDataBeMocked ? true : false}
-        />
         <input
           type="button"
           value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
@@ -177,6 +185,15 @@ class Driver extends React.Component {
         />
         
         <div className="counter">Sent events: {this.state.sentEvents}</div>
+        <h3>Upload your mocked route:</h3>
+        <input
+            type="file"
+            onChange={e => this.updateMockedData(e)}
+            accept=".json,application/json"
+          />
+          <div className="error">
+            { this.state.errorMessage }
+          </div>
       </div>
     );
   };

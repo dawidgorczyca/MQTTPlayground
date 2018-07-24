@@ -75,15 +75,15 @@ module.exports.getPaidAreas = (cb) => {
     const result = [];
     const dirname = './scripts/defineHeremapArea/';
 
-    fs.readdir(dirname, function(err, filenames) {
+    fs.readdir(dirname, (err, filenames) => {
 
         const files = filenames.filter(file => file.split('.')[1] === 'wkt');
         files.forEach(function(filename, index) {
-            console.log('filename',filename)
             fs.readFile(dirname + filename, 'utf-8', function(err, data) {
                 const geometry = data.toString().split('\n')[1].split('\t')[3];
-                result.push(geometry);
-                if (index === files.length-1) {
+                result.push(geometry)
+                console.log('result',result)
+                if (index === files.length -1) {
                     cb(result);
                 }
             });

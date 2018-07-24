@@ -68,6 +68,17 @@ class InterfaceContainer extends Component {
       this.handleZoom(pointData, 14)
     }
   }
+
+  handleFenceZoom(fenceIndex) {
+    if(fenceIndex === 1){
+      this.handleZoom({
+        "latitude": 51.935365,
+        "longitude": 15.491919
+      }, 14)
+    }
+  }
+
+  // TODO: Below functions should go to separate components
   renderDrivers(drivers) {
     const { activeDriver } = this.state
     return drivers.map((driver) => {
@@ -93,20 +104,42 @@ class InterfaceContainer extends Component {
       </li>)
     })
   }
+  renderFences(fences) {
+    return fences.map((fence, index) => {
+      return (
+        <li key={fence._id} onClick={() => this.handleFenceZoom(index)}>
+          Fence #{index}
+          { index === 1 && (
+            <input
+              type="button"
+              value="Show"
+              className="btn active"
+              onClick={() => this.handleFenceZoom(index)}
+            />
+          )}
+        </li>
+      )
+    })
+  }
   render() {
     const {
       mqttStatus,
       children
     } = this.props
     const driversRender = this.renderDrivers(this.props.drivers)
+    const fencesRender = this.renderFences(this.props.fences)
     return (
       <div className="interfaceContainer">
         <div className="interfaceContainer__status">
           Connection status: <span className={mqttStatus}>{mqttStatus}</span>
         </div>
         <div className="interfaceContainer__drivers">
-          <h3>Known drivers:</h3>
+          <h3>Drivers:</h3>
           {driversRender}
+        </div>
+        <div className="interfaceContainer__fences">
+          <h3>Fences:</h3>
+          {fencesRender}
         </div>
         <div className="interfaceContainer__content">
           {children}
