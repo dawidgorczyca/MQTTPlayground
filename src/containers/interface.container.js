@@ -13,7 +13,8 @@ class InterfaceContainer extends Component {
   constructor( props ) {
     super( props );
     this.state = {
-      activeDriver: ''
+      activeDriver: '',
+      driverRoutesIds: []
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -50,6 +51,7 @@ class InterfaceContainer extends Component {
   getDriverActiveRoute(driverId) {
     const { routes } = this.props
     const activeRoute = routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
+    console.log('index ', activeRoute);
     return activeRoute
   }
   getDriverStatus(driverId) {
@@ -78,9 +80,22 @@ class InterfaceContainer extends Component {
     }
   }
 
+  getDriverRoutes(driverId){
+    console.log('here')
+    const { routes } = this.props
+    this.setState({driverRoutesIds: []});
+    routes.forEach((route, index)=>{ 
+      if(route.driverId === driverId) {
+        this.setState(prevState => ({
+          driverRoutesIds: [...prevState.driverRoutesIds, index]
+        }))
+      }
+    });
+  }
+
   // TODO: Below functions should go to separate components
   renderDrivers(drivers) {
-    const { activeDriver } = this.state
+    const { activeDriver, driverRoutesIds } = this.state
     return drivers.map((driver) => {
       return (
       <li key={driver.id}>
@@ -91,15 +106,23 @@ class InterfaceContainer extends Component {
           type="button"
           value={activeDriver === driver.id ? 'UNTRACK' : 'TRACK'}
           className="btn active"
-          onClick={() => this.setActiveDriver(driver.id)}
+          onClick={() => {this.getDriverRoutes(driver.id); this.setActiveDriver(driver.id)} }
         />
         {activeDriver === driver.id && (
-          <input
+          <span><input
             type="button"
             value="Show current location"
             className="btn active"
             onClick={() => this.zoomLastPosition(driver.id)}
           />
+          {driverRoutesIds.map((id) => {return <button key={id}>{id}</button>})}
+          {/* <input 
+            type="button"
+            value="asd"
+            className="btn active"
+            onClick={() => this.getDriverRoutes(driver.id)}
+          /> */}
+          </span>
         )}
       </li>)
     })
