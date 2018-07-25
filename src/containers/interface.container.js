@@ -17,7 +17,7 @@ class InterfaceContainer extends Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    this.handleActiveRoad(nextProps.routes)
+    this.handleActiveRoad(nextProps.routes);
   }
 
   setActiveDriver(driver) {
@@ -34,23 +34,29 @@ class InterfaceContainer extends Component {
     const activeRoad = this.getDriverActiveRoute(activeDriver)
         
     if(activeRoad !== -1) {
-      let activeRoadPoints = JSON.parse(JSON.stringify(routes[activeRoad].points))
-      console.log('activeRoadPoints',routes[activeRoad].points)
+      this.printRoute(routes, activeRoad);
+    }
+  }
+  handleSingleRoute(routeId) {
+    const {routes} = this.props; 
+    removeAllRoads(mapService.map)
+    this.printRoute(routes, routeId)
+    
+  }
+  printRoute(routes, routeId) {
+    let activeRoadPoints = JSON.parse(JSON.stringify(routes[routeId].points))
       if(activeRoadPoints.length >= 3) {
         activeRoadPoints.shift()
-        console.log('activeRoadPoints splice',activeRoadPoints)
         addRoute(
           mapService.map,
           activeRoadPoints
         )
       }
-    }
   }
 
   getDriverActiveRoute(driverId) {
-    const { routes } = this.props
-    const activeRoute = routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
-    return activeRoute
+    const { routes } = this.props;
+    return routes.findIndex(route => (route.status === 'ACTIVE' && route.driverId === driverId))
   }
   getDriverStatus(driverId) {
     return this.getDriverActiveRoute(driverId) !== -1 ? 'ACTIVE' : 'UNACTIVE'
@@ -80,7 +86,8 @@ class InterfaceContainer extends Component {
 
   // TODO: Below functions should go to separate components
   renderDrivers(drivers) {
-    const { activeDriver } = this.state
+    const { activeDriver, driverRoutesIds } = this.state
+    const { routes } = this.props
     return drivers.map((driver) => {
       return (
       <li key={driver.id}>
@@ -91,7 +98,7 @@ class InterfaceContainer extends Component {
           type="button"
           value={activeDriver === driver.id ? 'UNTRACK' : 'TRACK'}
           className="btn active"
-          onClick={() => this.setActiveDriver(driver.id)}
+          onClick={() => {this.setActiveDriver(driver.id)} }
         />
         {activeDriver === driver.id && (
           <input
@@ -101,6 +108,12 @@ class InterfaceContainer extends Component {
             onClick={() => this.zoomLastPosition(driver.id)}
           />
         )}
+        {routes.map((route, index) => {
+          return(
+            route.driverId === driver.id && (
+           <button key={index} onClick={()=> this.handleSingleRoute(index)}>{index}</button>)
+          )  
+        })}
       </li>)
     })
   }
