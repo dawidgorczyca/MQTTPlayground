@@ -155,6 +155,14 @@ function start(){
         })
     })
 
+    app.get('/clearDatabase', async (req, res) => {
+
+      console.log('inside endpoint')
+      db.dropDatabase(status => {
+        return res.send(status);
+      });      
+    })
+
     app.listen(8080, () => console.log('REST API listening on port 8080.'));
 
 };

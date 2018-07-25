@@ -1,7 +1,7 @@
 import React from "react";
 import "./Driver.css";
 import { MqttService } from "./Mqtt.service";
-import { axios } from 'axios';
+import axios from 'axios';
 
 const START_TEXT = "Start new route";
 const STOP_TEXT = "Finish route";
@@ -111,7 +111,6 @@ class Driver extends React.Component {
   }
 
   handleClearDatabase = () => {
-    console.log('handleClearDatabase runned');
     axios({
       method:'get',
       url:'http://localhost:8080/clearDatabase',

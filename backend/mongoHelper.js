@@ -45,7 +45,6 @@ module.exports.getDataForClient = (clientId, cb) => {
             cb(docs);
             client.close();
         });
-
     });
 }
 
@@ -63,4 +62,30 @@ module.exports.getClients = (cb) => {
         });
         cb(clients);
     });
+}
+
+module.exports.dropDatabase = (cb) => {
+
+  const { dbUrl, dbUser, dbMainCollection } = dbConfig
+
+  MongoClient.connect(dbUrl, { useNewUrlParser: true }, (err, client) => {
+    
+    console.log('inside dropDatabase')
+    if (err) console.log('error  ', err);
+    const db = client.db(dbUser);
+    const collection = db.collection(dbMainCollection);
+    // console.log(collection);
+    cb(collection);
+    // const clientTopic = `/Tracking/${clientId}`
+    // collection.find({topic: {'$regex': `^${clientTopic}$`}}).toArray((err, docs) => {
+    //     docs = docs.map(doc => {
+    //         doc.value = doc.value.toString();
+    //         return doc;
+    //     });
+    //     cb(docs);
+    //     client.close();
+    // });
+});
+  
+
 }
