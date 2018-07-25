@@ -1,6 +1,7 @@
 import React from "react";
 import "./Driver.css";
 import { MqttService } from "./Mqtt.service";
+import { axios } from 'axios';
 
 const START_TEXT = "Start new route";
 const STOP_TEXT = "Finish route";
@@ -109,6 +110,17 @@ class Driver extends React.Component {
     MqttService.updateDriver(this.state.driverId, this.state.driverName)
   }
 
+  handleClearDatabase = () => {
+    console.log('handleClearDatabase runned');
+    axios({
+      method:'get',
+      url:'http://localhost:8080/clearDatabase',
+    })
+      .then(( response ) => {
+        console.log('response from clearDatabase endpoint ', response);
+    })
+  }
+
   updateMockedData = e => {
     if (e.target.files[0]) {
       const reader = new FileReader();
@@ -196,6 +208,12 @@ class Driver extends React.Component {
           value="Edit current driver"
           className="btn active"
           onClick={() => this.handleUpdateDriverBtn()}
+        />
+        <input
+          type="button"
+          value="Clear database"
+          className="btn active"
+          onClick={() => this.handleClearDatabase()}
         />
         
         <div className="counter">Sent events: {this.state.sentEvents}</div>

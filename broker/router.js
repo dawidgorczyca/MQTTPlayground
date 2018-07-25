@@ -19,7 +19,6 @@ function start(){
         });
     });
 
-
     // Endpoint returns all objects from DB (RAW DATA collected by driver)
     app.get('/rawData', (req, res) => {
         db.getAllData(data => {
@@ -44,7 +43,6 @@ function start(){
             return res.send(data);
         });
     });
-
 
     // Endpoint returns points after heremap matching for one client
     // Endpoint returns array of arrays like ["15.55929", "51.92393", 19.96, false]
