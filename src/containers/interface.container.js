@@ -17,12 +17,10 @@ class InterfaceContainer extends Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    console.log('here1');
     this.handleActiveRoad(nextProps.routes);
   }
 
   setActiveDriver(driver) {
-    console.log('here2');
     removeAllRoads(mapService.map)
     if(driver === this.state.activeDriver) {
       this.setState( { activeDriver: '' } )
