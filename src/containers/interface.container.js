@@ -170,75 +170,83 @@ class InterfaceContainer extends Component {
     
     return (
       <div className="interfaceContainer">
-        <div className="interfaceContainer__status">
-          Connection status: <span className={mqttStatus}>{mqttStatus}</span>
-        </div>
-        <div>
-          <input
-            type="button"
-            value="Clear map selection"
-            className="btn active"
-            onClick={() => removeMarkersRoads(mapService.map)}
-          />
-          <br/>
-          <input
-            name="zoomZoom"
-            type="text"
-            value={this.state.zoomZoom}
-            placeholder="zoom level"
-            onChange={(e) => this.handleGenericInput(e)}
-          />
-          <input
-            name="zoomLat"
-            type="text"
-            value={this.state.zoomLat}
-            placeholder="latitude"
-            onChange={(e) => this.handleGenericInput(e)}
-          />
-          <input
-            name="zoomLong"
-            type="text"
-            value={this.state.zoomLong}
-            placeholder="longitude"
-            onChange={(e) => this.handleGenericInput(e)}
-          />
-          <input
-            type="button"
-            value="Zoom To"
-            onClick={() => this.handleZoom({
-              "latitude": zoomLat,
-              "longitude": zoomLong
-            }, zoomZoom)}
-          />
-          <br/><br/>
-          <h3>Fences Price per meter:</h3>
-          <input
-            type="text"
-            name="fencesPrice"
-            value={this.state.fencesPrice}
-            onChange={(e) => this.handleGenericInput(e)}
-          />
-        </div>
-        <div className="interfaceContainer__drivers">
-          <h3>Drivers:</h3>
-          <DriversListComponent
-            drivers={drivers}
-            routes={routes}
-            getDriverActiveRoute={this.getDriverActiveRoute}
-            handleRouteShow={this.handleRouteShow}
-            zoomLastPosition={this.zoomLastPosition}
-            activeDriver={this.state.activeDriver}
-            setActiveDriver={this.setActiveDriver}
-            getDriverStatus={this.getDriverStatus}
-            calculateRoad={this.calculateRoad}
-          />
-        </div>
-        <div className="interfaceContainer__fences">
-          <h3>Fences:</h3>
-          <FencesComponent
-            fences={fences}
-            handleFenceZoom={this.handleFenceZoom}
-          />
+        <div className="interfaceToolbox">
+          <h1 className="interfaceToolbox_heading">
+            Driver tracker
+          </h1>
+          <div className="interfaceToolbox_subheading">
+            Connection status: <span className={mqttStatus}>{mqttStatus.toUpperCase()}</span>
+          </div>
+          <div className="interfaceContainer__options">
+            <label htmlFor="fencesPrice">Tool cost per meter:</label>
+            <input
+              type="text"
+              name="fencesPrice"
+              id="fencesPrice"
+              value={this.state.fencesPrice}
+              onChange={(e) => this.handleGenericInput(e)}
+            />
+
+            <input
+              type="button"
+              value="Clear map selection"
+              className="btn btn-primary assignRight"
+              onClick={() => removeMarkersRoads(mapService.map)}
+            />
+          </div>
+          <div className="interfaceContainer__drivers">
+            <h2>Known Drivers</h2>
+            <DriversListComponent
+              drivers={drivers}
+              routes={routes}
+              getDriverActiveRoute={this.getDriverActiveRoute}
+              handleRouteShow={this.handleRouteShow}
+              zoomLastPosition={this.zoomLastPosition}
+              activeDriver={this.state.activeDriver}
+              setActiveDriver={this.setActiveDriver}
+              getDriverStatus={this.getDriverStatus}
+              calculateRoad={this.calculateRoad}
+            />
+          </div>
+          <div className="interfaceContainer__fences">
+            <h2>Defined Tool areas</h2>
+            <FencesComponent
+              fences={fences}
+              handleFenceZoom={this.handleFenceZoom}
+            />
+          </div>
+          <div className="interfaceContainer__customZoom">
+            <h3>Manual zoom</h3>
+            <input
+              name="zoomZoom"
+              type="text"
+              value={this.state.zoomZoom}
+              placeholder="zoom level"
+              onChange={(e) => this.handleGenericInput(e)}
+            />
+            <input
+              name="zoomLat"
+              type="text"
+              value={this.state.zoomLat}
+              placeholder="latitude"
+              onChange={(e) => this.handleGenericInput(e)}
+            />
+            <input
+              name="zoomLong"
+              type="text"
+              value={this.state.zoomLong}
+              placeholder="longitude"
+              onChange={(e) => this.handleGenericInput(e)}
+            />
+            <input
+              type="button"
+              value="Zoom To"
+              onClick={() => this.handleZoom({
+                "latitude": zoomLat,
+                "longitude": zoomLong
+              }, zoomZoom)}
+            />
+          </div>
         </div>
         <div className="interfaceContainer__content">
           {children}

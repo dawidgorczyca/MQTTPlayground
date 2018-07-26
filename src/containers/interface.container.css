@@ -1,3 +1,142 @@
+input, select {
+  border: 1px solid #A3A9B4;
+  color: #A3A9B4;
+  font-size: 14px;
+  padding: 10px;
+  font-family: 'Roboto';
+  box-sizing: border-box;
+  transition: .5s; }
+
+input:focus {
+  outline: 2px solid #D69F4D;
+  color: #505254; }
+
+input[type=submit],
+input[type=button],
+button {
+  border: 1px solid #9780c6;
+  background-color: #62459b;
+  color: #FEFEFE;
+  outline: none; }
+
+input[type=submit]:hover,
+input[type=button]:hover,
+button:hover {
+  background-color: #7b5db6;
+  color: #FEFEFE;
+  cursor: pointer; }
+
+input[type=submit]:active,
+input[type=button]:active,
+button:active {
+  background-color: #402e66;
+  color: #FEFEFE; }
+
 .interfaceContainer {
-  margin: 0px;
-}
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-flow: row;
+  margin: 0px; }
+  .interfaceContainer .interfaceToolbox, .interfaceContainer .interfaceContainer__content {
+    flex: 0 1 auto; }
+  .interfaceContainer .interfaceToolbox {
+    width: 30%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: white;
+    color: #505254;
+    border-right: 4px solid #1F1631; }
+    .interfaceContainer .interfaceToolbox .interfaceToolbox_heading,
+    .interfaceContainer .interfaceToolbox .interfaceContainer__status,
+    .interfaceContainer .interfaceToolbox .interfaceContainer__customZoom,
+    .interfaceContainer .interfaceToolbox .interfaceContainer__drivers,
+    .interfaceContainer .interfaceToolbox .interfaceContainer__fences,
+    .interfaceContainer .interfaceToolbox .interfaceToolbox_subheading,
+    .interfaceContainer .interfaceToolbox .interfaceContainer__options,
+    .interfaceContainer .interfaceToolbox .interface--drivers {
+      display: block;
+      width: 100%;
+      padding: 0px; }
+    .interfaceContainer .interfaceToolbox .interfaceToolbox_heading {
+      margin: 0px;
+      font-size: 48px;
+      color: #CC4738; }
+    .interfaceContainer .interfaceToolbox .interfaceToolbox_subheading {
+      color: #505254;
+      font-size: 14px;
+      padding: 0 0 10px 0;
+      margin: 0 0 10px 0;
+      border-bottom: 1px dotted #A3A9B4; }
+      .interfaceContainer .interfaceToolbox .interfaceToolbox_subheading span {
+        font-weight: 600; }
+        .interfaceContainer .interfaceToolbox .interfaceToolbox_subheading span.online {
+          color: #5aaf0a; }
+        .interfaceContainer .interfaceToolbox .interfaceToolbox_subheading span.offline {
+          color: #CC4738; }
+    .interfaceContainer .interfaceToolbox .interfaceContainer__options {
+      font-size: 12px;
+      margin: 0 0 20px 0;
+      padding: 0 0 10px 0;
+      border-bottom: 1px dotted #A3A9B4; }
+      .interfaceContainer .interfaceToolbox .interfaceContainer__options input[type="text"] {
+        width: 40px; }
+  .interfaceContainer .interfaceContainer__content {
+    display: flex;
+    width: 70%;
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px; }
+  .interfaceContainer .interface--drivers {
+    list-style: none; }
+    .interfaceContainer .interface--drivers .interface--drivers--item {
+      border: 1px solid #A3A9B4;
+      box-sizing: border-box;
+      padding: 10px;
+      box-shadow: 0px 6px 20px 0px rgba(163, 169, 180, 0.5);
+      transition: box-shadow .5s; }
+      .interfaceContainer .interface--drivers .interface--drivers--item:hover {
+        box-shadow: 0px 6px 20px 0px rgba(80, 82, 84, 0.5); }
+      .interfaceContainer .interface--drivers .interface--drivers--item .driver--toolbar {
+        display: inline-block;
+        width: 100%;
+        margin: 0px;
+        padding: 0px; }
+        .interfaceContainer .interface--drivers .interface--drivers--item .driver--toolbar .btn-track {
+          border: 1px solid #D69F4D;
+          background-color: #D69F4D;
+          color: black;
+          outline: none;
+          padding: 6px;
+          font-size: 12px;
+          margin-right: 4px; }
+          .interfaceContainer .interface--drivers .interface--drivers--item .driver--toolbar .btn-track:hover {
+            background-color: #e9cca0; }
+      .interfaceContainer .interface--drivers .interface--drivers--item .driver--basicInfo {
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 20px; }
+        .interfaceContainer .interface--drivers .interface--drivers--item .driver--basicInfo .driver--name {
+          display: inline-block;
+          font-size: 24px;
+          font-weight: 600;
+          width: 60%; }
+        .interfaceContainer .interface--drivers .interface--drivers--item .driver--basicInfo .driver--basicInfo-right {
+          display: inline-block;
+          text-align: right;
+          width: 40%;
+          font-size: 12px; }
+          .interfaceContainer .interface--drivers .interface--drivers--item .driver--basicInfo .driver--basicInfo-right .driver--basicInfo-status,
+          .interfaceContainer .interface--drivers .interface--drivers--item .driver--basicInfo .driver--basicInfo-right .driver--basicInfo-id {
+            display: inline-block;
+            width: 100%; }
+          .interfaceContainer .interface--drivers .interface--drivers--item .driver--basicInfo .driver--basicInfo-right .driver-status--UNACTIVE {
+            color: #A3A9B4; }
+          .interfaceContainer .interface--drivers .interface--drivers--item .driver--basicInfo .driver--basicInfo-right .driver-status--ACTIVE {
+            color: #5aaf0a; }
+
+.assignRight {
+  float: right; }

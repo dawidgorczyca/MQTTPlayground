@@ -64,26 +64,36 @@ class DriversListComponent extends Component {
       <ul className="interface--drivers">
         {drivers.map((driver) => (
           <li className="interface--drivers--item" key={driver.id}>
-            id: {driver.id}<br/>
-            name: {driver.data.name}<br/>
-            status: {getDriverStatus(driver.id)}
+            <div className="driver--basicInfo">
+              <span className="driver--name">
+                {driver.data.name}
+              </span>
+              <span className="driver--basicInfo-right">
+                <span className="driver--basicInfo-status">
+                  Status: <b className={`driver-status--${getDriverStatus(driver.id)} driver--basicInfo-status-indicator`}>{getDriverStatus(driver.id)}</b>  
+                </span>
+                <span className="driver--basicInfo-id">
+                  Id: <b>{driver.id}</b>
+                </span>
+              </span>
+            </div>
+            <div className="driver--toolbar">
+              <input
+                type="button"
+                value={activeDriver === driver.id ? 'Stop tracking' : 'Track this driver live'}
+                className="btn btn-track"
+                onClick={() => setActiveDriver(driver.id)}
+              />
+              {activeDriver === driver.id && (
+                  <input
+                    type="button"
+                    value="Show current location"
+                    className="btn btn-track"
+                    onClick={() => zoomLastPosition(driver.id)}
+                  />)
+              }
+            </div>
             {this.renderDriverRoutes(driver.id)}
-            <input
-              type="button"
-              value={activeDriver === driver.id ? 'UNTRACK' : 'TRACK'}
-              className="btn active"
-              onClick={() => setActiveDriver(driver.id)}
-            />
-            {activeDriver === driver.id && (
-              <div>
-                <input
-                  type="button"
-                  value="Show current location"
-                  className="btn active"
-                  onClick={() => zoomLastPosition(driver.id)}
-                />
-              </div>)
-            }
           </li>)
         )}
       </ul>

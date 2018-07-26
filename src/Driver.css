@@ -17,16 +17,3 @@ div + div {
     background-color: red; }
   .status.active {
     background-color: green; }
-
-.btn {
-  padding: 10px 20px;
-  border: none;
-  color: white;
-  background-color: #333333fb;
-  border: 1px solid white; }
-  .btn.inactive {
-    background-color: #333333fb; }
-  .btn.active {
-    background-color: #b30000 !important; }
-  .btn.disabled {
-    background-color: gray; }
