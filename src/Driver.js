@@ -116,7 +116,11 @@ class Driver extends React.Component {
       url:'http://localhost:8080/clearDatabase',
     })
       .then(( response ) => {
-        console.log('response from clearDatabase endpoint ', response);
+        if(response.data && response.data.name && response.data.message ){
+          console.error(`${response.data.name} ${response.data.message}`)
+        }else{
+          console.log(response.data);
+      }
     })
   }
 

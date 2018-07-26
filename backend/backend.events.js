@@ -4,7 +4,8 @@ const {
   findInCollection,
   alterCollection,
   getCollection,
-  findAllInCollection
+  findAllInCollection,
+  dropDatabase
 } = require('./backend.methods')
 const {
   driverAttributes
@@ -221,6 +222,17 @@ async function getFromCollection(collectionName, item, cb) {
   }
 }
 
+async function clearDatabase(cb){
+  try{
+    await dropDatabase(
+      dbConfig,
+      (status) => cb(status) 
+    )
+  }catch(e){
+    console.log('error in backend.events: ', e)
+  }
+}
+
 async function initBackend() {
   try {
     await initializeCollections(dbConfig)
@@ -236,11 +248,13 @@ async function initBackend() {
   }
 }
 
+
 module.exports.dbEvents = {
   insertDriver,
   insertRoute,
   insertFence,
   getFromDb,
-  getFromCollection
+  getFromCollection,
+  clearDatabase
 }
 module.exports.init = initBackend
