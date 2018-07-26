@@ -1,10 +1,12 @@
+import axios from 'axios'
+
 function prepareLineString(lineData) {
   const lineString = new window.H.geo.LineString()
 
   lineData.forEach((point) => {
-    if(point.latitude && point.longitude) {
-      const lat = parseFloat(point.latitude)
-      const lng = parseFloat(point.longitude)
+    if(point[0] && point[1]) {
+      const lat = parseFloat(point[1])
+      const lng = parseFloat(point[0])
       if(typeof lat === "number" || typeof lng === "number") {
         lineString.pushPoint({lat: lat, lng: lng})
       }
@@ -14,12 +16,47 @@ function prepareLineString(lineData) {
   return lineString
 }
 
-export function addRoute(map, route) {
-  removeAllRoads(map)
-  const line = prepareLineString(route)
-  map.addObject(new window.H.map.Polyline(
-    line, { style: { lineWidth: 3, strokeColor: 'red' }}
-  ))
+function cleanArray(actual) {
+  var newArray = new Array();
+  for (var i = 0; i < actual.length; i++) {
+    if (actual[i]) {
+      newArray.push(actual[i]);
+    }
+  }
+  return newArray;
+}
+
+function prepareRoute(route) {
+  return cleanArray(route.map((point) => {
+    if((point.latitude && point.longitude) && (point.latitude.length && point.longitude.length) ){
+      return point
+    }
+  }))
+}
+
+async function matchRoute(route) {
+  return axios.post('http://localhost:8080/matchroute', {
+    route: route
+  })
+  .then(( response ) => {
+    return response
+  })
+}
+
+export async function addRoute(map, route) {
+  try {
+    const newRoute = prepareRoute(route)
+    await removeAllRoads(map)
+    const matchedRoute = await matchRoute(newRoute)
+    const convertedRoute = await prepareLineString(matchedRoute.data)
+
+    map.addObject(new window.H.map.Polyline(
+      convertedRoute, { style: { lineWidth: 3, strokeColor: 'red' }}
+    ))
+  } catch(err) {
+    console.log(err)
+    return err
+  }
 }
 function editRoute(route) {
 
