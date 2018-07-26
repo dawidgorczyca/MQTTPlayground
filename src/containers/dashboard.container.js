@@ -49,7 +49,7 @@ class DashboardContainer extends Component {
   render() {
     subscribeMQTT()
     return(
-      <div>
+      <div className="dashboardContainer">
         <Provider store={store}>
           <InterfaceContainer>
             <MapComponent/>

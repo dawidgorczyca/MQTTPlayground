@@ -1,0 +1,247 @@
+@import '../styles/_sizing.scss';
+@import '../styles/_colors.scss';
+@import '../styles/_inputs.scss';
+
+.interfaceContainer {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-flow: row;
+  margin: 0px;
+
+  .interfaceToolbox, .interfaceContainer__content {
+    flex: 0 1 auto;
+  }
+  .interfaceToolbox {
+    width: 30%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: white;
+    color: $grayDark;
+    border-right: 4px solid $darkBlue;
+
+    .interfaceToolbox_heading,
+    .interfaceContainer__status,
+    .interfaceContainer__customZoom,
+    .interfaceContainer__drivers,
+    .interfaceContainer__fences,
+    .interfaceToolbox_subheading,
+    .interfaceContainer__options,
+    .interface--drivers {
+      display: block;
+      width: 100%;
+      padding: 0px;
+    }
+
+    .interfaceContainer__customZoom {
+      margin-top: 30px;
+    }
+
+    .interfaceToolbox_heading {
+      margin: 0px;
+      font-size: $fontBanner;
+      color: $red;
+    }
+    .interfaceToolbox_subheading {
+      color: $grayDark;
+      font-size: $fontMid;
+      padding: 0 0 10px 0;
+      margin: 0 0 10px 0;
+      border-bottom: 1px dotted $gray;
+
+      span {
+        font-weight: 600;
+
+        &.online {
+          color: $green;
+        }
+        &.offline {
+          color: $red;
+        }
+      }
+    }
+    .interfaceContainer__options {
+      font-size: $fontSmall;
+      margin: 0 0 20px 0;
+      padding: 0 0 10px 0;
+      border-bottom: 1px dotted $gray;
+
+      input[type="text"] {
+        width: 40px;
+      }
+    }
+  }
+  .interfaceContainer__content {
+    display: flex;
+    width: 70%;
+    margin: 0px;
+    padding: 0px;
+    font-size: $fontMid;
+  }
+  .interface--drivers {
+    list-style: none;
+
+    .interface--drivers--item {
+      border: 1px solid $gray;
+      box-sizing: border-box;
+      padding: 10px;
+      box-shadow: 0px 6px 20px 0px rgba($gray, 0.5);
+      transition:box-shadow .5s;
+      transition:border-color .5s;
+      margin-bottom: 20px;
+
+      &:hover {
+        box-shadow: 0px 6px 20px 0px rgba($grayDark, 0.5);
+        border-color: $grayDark;
+      }
+
+      .interface--drivers--routes {
+        display: inline-block;
+        width: 100%;
+        padding: 10px 0 0 0;
+        margin-top:10px;
+        border-top: 1px dotted $gray;
+
+        h3 {
+          margin: 0 0 10px;
+        }
+
+        ul {
+          display: inline-block;
+          width: 100%;
+          list-style: none;
+          margin: 0px;
+          padding: 0px;
+
+          li {
+            margin-bottom: 10px;
+            display: inline-block;
+            width: 100%;
+            border-bottom: 1px dotted $gray;
+            font-size: $fontSmall;
+            position: relative;
+
+            .driverRoutes--basicInfo {
+              float: left;
+              height: 40px;
+              width: 100%;
+              margin-bottom: 6px;
+
+              .driverRoutes--cost {
+                margin-top: 4px;
+              }
+
+              .driverRoutes--basicInfo--name {
+                font-size: $fontBig;
+              }
+              
+              span {
+                float: left;
+                width: 100%;
+              }
+            }
+
+            .driverRoutes--toolbox {
+              position: absolute;
+              top: 0;
+              right: 0;
+              text-align: right;
+              .btn {
+                padding: 4px;
+                font-size: $fontSmall;
+                margin-left:2px;
+              }
+            }
+          }
+        }
+      }
+
+      .driver--toolbar {
+        display: inline-block;
+        width: 100%;
+        margin: 0px;
+        padding: 0px;
+
+        .btn-track {
+          border: 1px solid $orange;
+          background-color: $orange;
+          color: black;
+          outline: none;
+          padding: 6px;
+          font-size: $fontSmall;
+          margin-right: 4px;
+
+          &:hover {
+            background-color: lighten($orange, 20%);
+          }
+        }
+      }
+
+      .driver--basicInfo {
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 20px;
+
+        .driver--name {
+          display: inline-block;
+          font-size: $fontHead;
+          font-weight: 600;
+          width: 60%;
+        }
+        .driver--basicInfo-right {
+          display: inline-block;
+          text-align: right;
+          width: 40%;
+          font-size: $fontSmall;
+
+          .driver--basicInfo-status,
+          .driver--basicInfo-id {
+            display: inline-block;
+            width: 100%;
+          }
+
+          .driver-status--UNACTIVE {
+            color: $gray;
+          }
+          .driver-status--ACTIVE {
+            color: $green;
+          }
+        }
+      }
+    }
+  }
+
+  .interfaceContainer__fences {
+    .interface--fences {
+      display: inline-block;
+      width: 100%;
+      list-style: none;
+      margin: 0px;
+      padding: 0px;
+
+      li {
+        float: left;
+        width: 100%;
+        border-bottom: 1px dotted $gray;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+
+        .fence--name, .fence--toolbox {
+          float: left;
+          width: 50%;
+        }
+  
+        .fence--toolbox {
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+
+.assignRight {
+  float: right;
+}

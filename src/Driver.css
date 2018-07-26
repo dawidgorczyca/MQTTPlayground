@@ -1,32 +1,115 @@
+input, select {
+  border: 1px solid #A3A9B4;
+  color: #A3A9B4;
+  font-size: 14px;
+  padding: 10px;
+  font-family: 'Roboto';
+  box-sizing: border-box;
+  transition: .5s; }
+
+input:focus {
+  outline: 2px solid #D69F4D;
+  color: #505254; }
+
+input[type=submit],
+input[type=button],
+button {
+  border: 1px solid #9780c6;
+  background-color: #62459b;
+  color: #FEFEFE;
+  outline: none; }
+
+input[type=submit]:hover,
+input[type=button]:hover,
+button:hover {
+  background-color: #7b5db6;
+  color: #FEFEFE;
+  cursor: pointer; }
+
+input[type=submit]:active,
+input[type=button]:active,
+button:active {
+  background-color: #402e66;
+  color: #FEFEFE; }
+
 .driver-main {
-  text-align: center;
-  padding: 20px; }
+  margin: 0px auto;
+  margin-top: 30px;
+  width: 600px;
+  box-sizing: border-box;
+  padding: 20px;
+  border: 1px solid #A3A9B4;
+  box-shadow: 0px 6px 20px 0px rgba(163, 169, 180, 0.5);
+  position: relative; }
+  .driver-main h1 {
+    font-size: 24px;
+    color: #CC4738;
+    border-bottom: 1px solid #A3A9B4;
+    padding: 0 0 10px;
+    margin: 0 0 20px; }
+  .driver-main .connection--status {
+    position: absolute;
+    right: 20px;
+    top: 28px;
+    font-size: 12px; }
+  .driver-main .driverInputLine {
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box; }
+    .driver-main .driverInputLine label, .driver-main .driverInputLine input {
+      display: inline-block;
+      width: 50%;
+      box-sizing: border-box; }
+    .driver-main .driverInputLine label {
+      padding: 10px 10px 10px 0;
+      text-align: right; }
+    .driver-main .driverInputLine input {
+      float: right; }
+  .driver-main .btn-wide {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 10px; }
+  .driver-main .driver--additionalOptions {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 10px; }
+    .driver-main .driver--additionalOptions .btn {
+      width: 50%;
+      box-sizing: border-box; }
+      .driver-main .driver--additionalOptions .btn:first-child {
+        margin-right: 1%;
+        width: 49%; }
+  .driver-main .driver--addFile {
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box; }
+    .driver-main .driver--addFile h4 {
+      display: inline-block;
+      width: 50%;
+      box-sizing: border-box;
+      margin: 0px;
+      padding-right: 10px;
+      text-align: right; }
+    .driver-main .driver--addFile input {
+      display: inline-block;
+      width: 50%; }
+  .driver-main .counter {
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center; }
 
 div + div {
   padding: 10px; }
 
 .counter {
-  font-size: 18px;
-  font-weight: 600; }
+  font-size: 18px; }
 
 .status {
   color: white;
   padding: 5px;
   border-radius: 50px; }
   .status.inactive {
-    background-color: red; }
+    background-color: #CC4738; }
   .status.active {
-    background-color: green; }
-
-.btn {
-  padding: 10px 20px;
-  border: none;
-  color: white;
-  background-color: #333333fb;
-  border: 1px solid white; }
-  .btn.inactive {
-    background-color: #333333fb; }
-  .btn.active {
-    background-color: #b30000 !important; }
-  .btn.disabled {
-    background-color: gray; }
+    background-color: #5aaf0a; }

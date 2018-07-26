@@ -1,6 +1,99 @@
+@import './styles/_sizing.scss';
+@import './styles/_colors.scss';
+@import './styles/_inputs.scss';
+
 .driver-main {
-    text-align: center;
+    margin: 0px auto;
+    margin-top: 30px;
+    width: 600px;
+    box-sizing: border-box;
     padding: 20px;
+    border: 1px solid $gray;
+    box-shadow: 0px 6px 20px 0px rgba($gray, 0.5);
+    position: relative;
+
+    h1 {
+        font-size: $fontHead;
+        color: $red;
+        border-bottom: 1px solid $gray;
+        padding: 0 0 10px;
+        margin:0 0 20px;
+    }
+
+    .connection--status {
+        position: absolute;
+        right: 20px;
+        top: 28px;
+        font-size: $fontSmall;
+    }
+
+    .driverInputLine {
+        display: inline-block;
+        width: 100%;
+        box-sizing: border-box;
+
+        label, input {
+            display: inline-block;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        label {
+            padding: 10px 10px 10px 0;
+            text-align: right;
+        }
+        input {
+            float: right;
+        }
+    }
+
+    .btn-wide {
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .driver--additionalOptions {
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 10px;
+
+        .btn {
+            width: 50%;
+            box-sizing: border-box;
+
+            &:first-child {
+                margin-right: 1%;
+                width: 49%;
+            }
+        }
+    }
+
+    .driver--addFile {
+        display: inline-block;
+        width: 100%;
+        box-sizing: border-box;
+        
+        h4 {
+            display: inline-block;
+            width: 50%;
+            box-sizing: border-box;
+            margin: 0px;
+            padding-right: 10px;
+            text-align: right;
+        }
+
+        input {
+            display: inline-block;
+            width: 50%;
+        }
+    }
+
+    .counter {
+        display: inline-block;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+    }
 }
 
 div+div {
@@ -9,7 +102,6 @@ div+div {
 
 .counter {
     font-size: 18px;
-    font-weight: 600;
   }
 
 .status {
@@ -18,29 +110,10 @@ div+div {
     border-radius: 50px;
 
     &.inactive {
-        background-color: red;
+        background-color: $red;
     }
 
     &.active {
-        background-color: green;
-    }
-}
-
-.btn {
-    padding: 10px 20px;
-    border: none;
-    color: white;
-    background-color: #333333fb;
-    border: 1px solid white;
-    
-    &.inactive {
-        background-color: #333333fb;
-    }
-
-    &.active {
-        background-color: darken(red, 15%) !important;
-    }
-    &.disabled {
-        background-color: gray;
+        background-color: $green;
     }
 }
