@@ -1,13 +1,48 @@
+body {
+  background-color: #1F1631; }
+
 .driver-main {
+  position: relative;
+  margin-top: 30px;
   text-align: center;
-  padding: 20px; }
+  padding: 20px 20px 50px 20px;
+  border: 1px solid black;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 450px;
+  background-color: white; }
+
+.connection-status {
+  float: left; }
+
+.field > label {
+  display: inline-block;
+  width: 49%;
+  text-align: right;
+  padding-right: 1%; }
+
+.field > input {
+  display: inline-block;
+  width: 49%; }
+
+.start-btn {
+  margin-top: 20px;
+  width: 100%; }
+
+.clearDatabase {
+  position: absolute;
+  bottom: 2px;
+  right: 2px; }
+
+.clearBoth {
+  clear: both; }
 
 div + div {
   padding: 10px; }
 
 .counter {
-  font-size: 18px;
-  font-weight: 600; }
+  padding-top: 0px;
+  padding-bottom: 0px; }
 
 .status {
   color: white;
@@ -23,10 +58,13 @@ div + div {
   border: none;
   color: white;
   background-color: #333333fb;
-  border: 1px solid white; }
+  border: 1px solid white;
+  cursor: pointer; }
   .btn.inactive {
-    background-color: #333333fb; }
+    background-color: #E79F5E; }
   .btn.active {
-    background-color: #b30000 !important; }
+    background-color: #D69F4D !important; }
+  .btn .btn.dangerous {
+    background-color: #b30000; }
   .btn.disabled {
     background-color: gray; }
