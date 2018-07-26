@@ -14,43 +14,51 @@ class DriversListComponent extends Component {
     activeRouteIndex !== -1 && routesToShow.splice(activeRouteIndex, 1)
     const driverRoutes = routesToShow.filter(route => route.driverId === driverId)
     
-    return (
-      <div className="interface--drivers--routes ">
-        <h3>Driver previous routes:</h3>
-        <ul>
-        {driverRoutes.map((route, index) => (
-          <li key={route._id}>
-            Route #{index}
-
-            <input
-              type="button"
-              value="Show route as line"
-              className="btn active"
-              onClick={() => handleRouteShow(route.points, 'line')}
-            />
-            <input
-              type="button"
-              value="Show route as points"
-              className="btn active"
-              onClick={() => handleRouteShow(route.points, 'markers')}
-            />
-            <input
-              type="button"
-              value="Calculate road cost"
-              className="btn active"
-              onClick={() => calculateRoad(route)}
-            />
-
-            {route.cost && (
-              <span>
-                Cost: <b>{route.cost}</b> per meter
-              </span> 
-            )}
-          </li>
-        ))}
-        </ul>
-      </div>
-    )
+    if(driverRoutes && driverRoutes.length) {
+      return (
+        <div className="interface--drivers--routes ">
+          <h3>Driver previous routes:</h3>
+          <ul>
+          {driverRoutes.map((route, index) => (
+            <li key={route._id}>
+              <span className="driverRoutes--basicInfo">
+                <span className="driverRoutes--basicInfo--name">
+                  Route <b>#{index}</b>
+                </span>
+                {route.cost && (
+                  <span className="driverRoutes--cost" >
+                    Toll value: <b>{route.cost}</b> € per meter
+                  </span> 
+                )}
+              </span>
+              <span className="driverRoutes--toolbox">
+                <input
+                  type="button"
+                  value="Show as line"
+                  className="btn"
+                  onClick={() => handleRouteShow(route.points, 'line')}
+                />
+                <input
+                  type="button"
+                  value="Show as points"
+                  className="btn"
+                  onClick={() => handleRouteShow(route.points, 'markers')}
+                />
+                <input
+                  type="button"
+                  value="Calculate cost"
+                  className="btn btn--calculate"
+                  onClick={() => calculateRoad(route)}
+                />
+              </span>
+            </li>
+          ))}
+          </ul>
+        </div>
+      )
+    } else {
+      return (<div></div>)
+    }
   }
   render() {
     const {

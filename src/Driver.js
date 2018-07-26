@@ -62,8 +62,6 @@ class Driver extends React.Component {
   mockGpsData = () => {
     const { mockedGpsLocations, eventsGap } = this.state
     const interval = parseInt(eventsGap) * 1000;
-    console.log(eventsGap * 1000)
-    console.log(interval)
     mockedGpsLocations.length && mockedGpsLocations.forEach(
       (location, index) =>
         (this.timeouts[index] = setTimeout(
@@ -143,7 +141,8 @@ class Driver extends React.Component {
   render = () => {
     return (
       <div className="driver-main">
-        <div>
+        <h1>Driver tracking device simulator</h1>
+        <div className="connection--status">
           Connection status:{" "}
           <span
             className={
@@ -153,7 +152,7 @@ class Driver extends React.Component {
             {this.state.connected ? "ONLINE" : "OFFLINE"}
           </span>
         </div>
-        <div>
+        <div className="driverInputLine">
           <label htmlFor="events-gap">Time gap between events: </label>
           <input
             type="number"
@@ -162,7 +161,7 @@ class Driver extends React.Component {
             onChange={e => this.setState({ eventsGap: e.currentTarget.value })}
           />
         </div>
-        <div>
+        <div className="driverInputLine">
           <label htmlFor="driver-id">Driver id: </label>
           <input
             type="text"
@@ -171,7 +170,7 @@ class Driver extends React.Component {
             onChange={e => this.setState({ driverId: e.currentTarget.value })}
           />
         </div>
-        <div>
+        <div className="driverInputLine">
           <label htmlFor="driver-name">Driver Name: </label>
           <input
             type="text"
@@ -180,12 +179,23 @@ class Driver extends React.Component {
             onChange={e => this.setState({ driverName: e.currentTarget.value })}
           />
         </div>
+        <div className="driver--addFile">
+          <h4>Upload your mocked route:</h4>
+          <input
+              type="file"
+              onChange={e => this.updateMockedData(e)}
+              accept=".json,application/json"
+            />
+          <div className="error">
+            { this.state.errorMessage }
+          </div>
+        </div>
         {this.state.mockedGpsLocations.length ? (
           <input
             type="button"
             value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
             className={
-              this.state.hasDriverStarted ? "btn active" : "btn inactive"
+              this.state.hasDriverStarted ? "btn btn-wide routeActive" : "btn btn-wide routeInactive"
             }
             onClick={() => this.handleGpsGatheringButton()}
           />
@@ -193,38 +203,25 @@ class Driver extends React.Component {
           <input
             type="button"
             value={this.state.hasDriverStarted ? STOP_TEXT : START_TEXT}
-            className="btn disabled"
+            className="btn btn-wide disabled"
           />
         )}
-        <input 
-          type="button"
-          value="Register driver"
-          className="btn active"
-          onClick={() => this.registerDriver()}
-        />
-        <input
-          type="button"
-          value="Edit current driver"
-          className="btn active"
-          onClick={() => this.handleUpdateDriverBtn()}
-        />
-        <input
-          type="button"
-          value="Clear database"
-          className="btn active"
-          onClick={() => this.handleClearDatabase()}
-        />
-        
-        <div className="counter">Sent events: {this.state.sentEvents}</div>
-        <h3>Upload your mocked route:</h3>
-        <input
-            type="file"
-            onChange={e => this.updateMockedData(e)}
-            accept=".json,application/json"
+        <div className="driver--additionalOptions">
+          <input 
+            type="button"
+            value="Register driver"
+            className="btn active"
+            onClick={() => this.registerDriver()}
           />
-          <div className="error">
-            { this.state.errorMessage }
-          </div>
+          <input
+            type="button"
+            value="Clear database"
+            className="btn active"
+            onClick={() => this.handleClearDatabase()}
+          />
+        </div>
+        
+        <div className="counter">Sent events: <b>{this.state.sentEvents}</b></div>
       </div>
     );
   };

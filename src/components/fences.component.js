@@ -16,13 +16,17 @@ class FencesComponent extends Component {
         {fences.map((fence, index) => {
           return (
             <li key={fence._id} onClick={() => handleFenceZoom(index)}>
-              Fence #{index}
-              <input
-                type="button"
-                value="Show"
-                className="btn active"
-                onClick={() => handleFenceZoom(index)}
-              />
+              <span className="fence--name">
+                Fence <b>no.{index}</b>
+              </span>
+              <span className="fence--toolbox">
+                <input
+                  type="button"
+                  value="Show"
+                  className="btn active"
+                  onClick={() => handleFenceZoom(index)}
+                />
+              </span>
             </li>
           )
         })}

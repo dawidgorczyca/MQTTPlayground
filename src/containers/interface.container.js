@@ -185,7 +185,7 @@ class InterfaceContainer extends Component {
               id="fencesPrice"
               value={this.state.fencesPrice}
               onChange={(e) => this.handleGenericInput(e)}
-            />
+            />€
 
             <input
               type="button"
