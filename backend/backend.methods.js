@@ -121,9 +121,27 @@ function initializeCollections(config) {
   })
 }
 
+function dropDatabase(config, cb) {
+  const { dbUrl, dbName } = config
+  MongoClient.connect(dbUrl, {useNewUrlParser: true}, async (err, client) => {
+    try {    
+      const db = client.db(dbName)
+      await db.collection('drivers').drop();
+      await db.createCollection('drivers');
+      await db.collection('routes').drop();
+      await db.createCollection('routes');
+      cb();
+    } catch(err) {
+      console.log('backend method: ', err);
+      return err;
+    } 
+  })
+}
+
 module.exports.findInCollection = findInCollection
 module.exports.populateCollection = populateCollection
 module.exports.initializeCollections = initializeCollections
 module.exports.alterCollection = alterCollection
 module.exports.getCollection = getCollection
 module.exports.findAllInCollection = findAllInCollection
+module.exports.dropDatabase = dropDatabase

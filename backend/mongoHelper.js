@@ -45,7 +45,6 @@ module.exports.getDataForClient = (clientId, cb) => {
             cb(docs);
             client.close();
         });
-
     });
 }
 
@@ -64,3 +63,4 @@ module.exports.getClients = (cb) => {
         cb(clients);
     });
 }
+
