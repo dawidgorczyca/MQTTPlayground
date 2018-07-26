@@ -144,16 +144,23 @@ function start(){
         })
     })
 
-    app.post('/matchroute', async (req, res) => {
+    app.post('/calculateroute', async (req, res) => {
         const { body } = req
         const points = JSON.parse(JSON.stringify(body.points))
         points.shift()
         points.pop()
-        await heremap.matchSingleRoute({
+        await heremap.calculateSingleRoute({
                 route: points,
                 price: body.price
             }, (calculatedInfo) => {
             res.send(calculatedInfo)
+        })
+    })
+
+    app.post('/matchroute', async (req, res) => {
+        const { body } = req
+        await heremap.matchSingleRoute(body.route, (matchedRoute) => {
+            res.send(matchedRoute)
         })
     })
 

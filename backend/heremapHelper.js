@@ -27,8 +27,8 @@ module.exports.getRouteAfterMatching = (clientId, cb) => {
         const coordinates = getCoordinates(data); 
 
         matchRoute(coordinates, async (matchedRoute) => {
-            const points = await getPointsInArea(matchedRoute);
-            cb(prepareWktLine(points));
+            const points = await getPointsInArea(matchedRoute)
+            cb(prepareWktLine(points))
         });
     });
 
@@ -80,7 +80,7 @@ module.exports.getPaidAreas = (cb) => {
             fs.readFile(dirname + filename, 'utf-8', function(err, data) {
                 const geometry = data.toString().split('\n')[1].split('\t')[3];
                 result.push(geometry)
-                console.log('result',result)
+
                 if (index === files.length -1) {
                     cb(result);
                 }
@@ -98,7 +98,7 @@ function getCoordinates(dbData) {
     });
 }
 
-module.exports.matchSingleRoute = async (data, cb) => {
+module.exports.calculateSingleRoute = async (data, cb) => {
     const gpxFile = await prepareGpxFile(data.route)
     const target = 'http://rme.cit.api.here.com/2/matchroute.json?routemode=car&app_id=' + appId + '&app_code=' + appCode
 
@@ -114,6 +114,7 @@ module.exports.matchSingleRoute = async (data, cb) => {
 
 function matchRoute(data, cb) {
     const gpxFile = prepareGpxFile(data);
+
     var target = 'http://rme.cit.api.here.com/2/matchroute.json?routemode=car&app_id=' + appId + '&app_code=' + appCode;
 
     var ws = request.post(target, (error, response, body) => {
@@ -122,6 +123,12 @@ function matchRoute(data, cb) {
     });
     ws.write(gpxFile);
     ws.end();
+}
+
+module.exports.matchSingleRoute = async (data, cb) => {
+    matchRoute(data, async (matchedRoute) => {
+        cb(matchedRoute)
+    });
 }
 
 function parseHeremapMatchingResponse(data) {
@@ -153,12 +160,9 @@ function parseHeremapMatchingResponse(data) {
 function prepareGpxFile(data) {
 
     const properData = data.filter(data => (data.latitude !== 'undefined') && (data.longitude !== 'undefined'));
-
     const points = properData.map(coordinates => {
         return new Point(coordinates.latitude, coordinates.longitude)
     });
-
-    // console.log('prepareGpx points', points)
      
     const gpxData = new GarminBuilder();
     gpxData.setSegmentPoints(points);

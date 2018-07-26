@@ -59,6 +59,7 @@ class InterfaceContainer extends Component {
 
       if(activeRoadPoints.length >= 3) {
         activeRoadPoints.shift()
+        activeRoadPoints.pop()
         addRoute(
           mapService.map,
           activeRoadPoints
@@ -131,7 +132,7 @@ class InterfaceContainer extends Component {
   calculateRoad(road) {
     const { dispatch, routes } = this.props
     if(this.state.fencesPrice !== 0){
-      axios.post('http://localhost:8080/matchroute', {
+      axios.post('http://localhost:8080/calculateroute', {
         ...road,
         price: this.state.fencesPrice
       })
