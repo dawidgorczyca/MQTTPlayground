@@ -124,15 +124,16 @@ function initializeCollections(config) {
 function dropDatabase(config, cb) {
   const { dbUrl, dbName } = config
   MongoClient.connect(dbUrl, {useNewUrlParser: true}, async (err, client) => {
-    try {
+    try {    
       const db = client.db(dbName)
       await db.collection('drivers').drop();
+      await db.createCollection('drivers');
       await db.collection('routes').drop();
-      cb('database droped');
-      // await db.collection('drivers').drop();
+      await db.createCollection('routes');
+      cb();
     } catch(err) {
-      console.error(err)
-      cb(err);
+      console.log('backend method: ', err);
+      return err;
     } 
   })
 }

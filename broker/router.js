@@ -14,7 +14,6 @@ function start(){
 
     // Endpoint returns all clients that are in DB
     app.get('/clients', (req, res) => {
-      console.log('clients');
         db.getClients(data => {
             return res.send(data);
         });
@@ -22,7 +21,6 @@ function start(){
 
     // Endpoint returns all objects from DB (RAW DATA collected by driver)
     app.get('/rawData', (req, res) => {
-      console.log('rawdata');
         db.getAllData(data => {
             return res.send(data);
         });
@@ -158,14 +156,13 @@ function start(){
     })
 
     app.get('/clearDatabase', async (req, res) => {
-      dbEvents.clearDatabase(
+      await dbEvents.clearDatabase(
         (status) => {
         res.send(status)
       })   
     })
 
     app.listen(8080, () => console.log('REST API listening on port 8080.'));
-
 };
 
 start();

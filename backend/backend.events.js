@@ -229,7 +229,8 @@ async function clearDatabase(cb){
       (status) => cb(status) 
     )
   }catch(e){
-    console.log('error in backend.events: ', e)
+    console.log(e)
+    return e;
   }
 }
 
@@ -245,6 +246,7 @@ async function initBackend() {
     })
   } catch(e) {
     console.log(e)
+    return e;
   }
 }
 

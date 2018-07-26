@@ -115,13 +115,10 @@ class Driver extends React.Component {
       method:'get',
       url:'http://localhost:8080/clearDatabase',
     })
-      .then(( response ) => {
-        if(response.data && response.data.name && response.data.message ){
-          console.error(`${response.data.name} ${response.data.message}`)
-        }else{
-          console.log(response.data);
-      }
-    })
+      .catch((err)=>{
+        console.error('err ', err);
+      })
+
   }
 
   updateMockedData = e => {
@@ -151,8 +148,7 @@ class Driver extends React.Component {
           <span
             className={
               "status" + (this.state.connected ? " active" : " inactive")
-            }
-            
+            } 
           >
             {this.state.connected ? "ONLINE" : "OFFLINE"}
           </span>
