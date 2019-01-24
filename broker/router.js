@@ -157,6 +157,7 @@ function start(){
 
     app.post('/matchroute', async (req, res) => {
         const { body } = req
+        console.log(body)
         await heremap.matchSingleRoute(body.route, (matchedRoute) => {
             res.send(matchedRoute)
         })

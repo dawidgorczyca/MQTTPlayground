@@ -1,6 +1,6 @@
 export const mapDefault = {
-  appId: 'DspJ5NsBzs7kwe8a5jSd',
-  appCode: 'e5nbefWd0rY8m2FeVQ5uRA',
+  appId: 'ZMbvfAkGeYasFZSx7x1J',
+  appCode: 'u1DeVB6TAi5VWno1gVVpaw',
   useCIT: true,
   useHTTPS: false,
   pixelRatio: 1,
