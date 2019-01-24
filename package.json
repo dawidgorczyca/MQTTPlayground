@@ -71,6 +71,7 @@
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive",
     "broker-start": "node broker/broker.js",
+    "api-start": "node broker/router.js",
     "publisher-start": "node broker/testPublisher.js",
     "define-heremap-area": "node ./scripts/defineHeremapArea/start.js",
     "start-https": "set HTTPS=true&&react-scripts start"
