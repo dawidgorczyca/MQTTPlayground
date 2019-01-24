@@ -4,8 +4,8 @@ const fs = require('fs');
 const { buildGPX, GarminBuilder } = require('gpx-builder');
 const { Point } = GarminBuilder.MODELS;
 
-const appId = 'txpoz50GfMuyShPMF5I2';
-const appCode = 'nN57_wL6Z_SpALh5sgKoMg';
+const appId = 'ZMbvfAkGeYasFZSx7x1J';
+const appCode = 'u1DeVB6TAi5VWno1gVVpaw';
 const areasIds = '5,6';
 
 
