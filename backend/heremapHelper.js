@@ -89,7 +89,7 @@ module.exports.getPaidAreas = (cb) => {
         });
 
       });
-    
+
 }
 
 function getCoordinates(dbData) {
@@ -134,7 +134,7 @@ module.exports.matchSingleRoute = async (data, cb) => {
 function parseHeremapMatchingResponse(data) {
     let point;
     let result = [];
-    
+
     data.RouteLinks.forEach((oneLine, index) => {
 
         var coordinates = oneLine.shape.split(' ');
@@ -191,7 +191,7 @@ function checkPointsInArea(points, geofenceId, radius) {
     return new Promise(function(resolve, reject) {
         var pointsString = prepareCoordinatesString(points, radius);
         var url = 'https://gfe.cit.api.here.com/2/search/proximity.json?app_id=' + appId + '&app_code=' + appCode + '&layer_ids=' + geofenceId + '&proximity=' + pointsString;
-    
+
         request(url, (error, response, body) => {
             var results = JSON.parse(body).results || []
             results.forEach( (result, index) => {

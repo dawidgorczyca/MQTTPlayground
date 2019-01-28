@@ -130,6 +130,8 @@ function dropDatabase(config, cb) {
       await db.createCollection('drivers');
       await db.collection('routes').drop();
       await db.createCollection('routes');
+      await db.collection('fences').drop();
+      await db.createCollection('fences');
       cb();
     } catch(err) {
       console.log('backend method: ', err);

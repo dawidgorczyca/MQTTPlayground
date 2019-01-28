@@ -1,8 +1,8 @@
 var fs = require('fs');
 var request = require('request');
 
-var appId = 'txpoz50GfMuyShPMF5I2';
-var appCode = 'nN57_wL6Z_SpALh5sgKoMg';
+var appId = 'ZMbvfAkGeYasFZSx7x1J';
+var appCode = 'u1DeVB6TAi5VWno1gVVpaw';
 
 
 function uploadNewGeofence(filePath, geofenceId) {

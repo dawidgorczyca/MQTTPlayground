@@ -7,7 +7,7 @@ const heremap = require('../backend/heremapHelper');
 const { dbEvents } = require('../backend/backend.events')
 
 function start(){
-    
+
     app.use(cors());
     app.use(express.json());       // to support JSON-encoded bodies
     app.use(express.urlencoded()); // to support URL-encoded bodies
@@ -53,7 +53,7 @@ function start(){
             return res.send(data);
         });
     });
-    
+
     // Endpoint returns route after heremap matching as a string with WKT LINESTRING (for one client)
     app.get('/routeAfterMatching/:clientId', (req, res) => {
         const clientId = req.params.clientId;
@@ -80,7 +80,7 @@ function start(){
             return res.send(data);
         });
     });
-    
+
     // Endpoint returns paid areas as an array of WKT file strings
     app.get('/paidAreas', (req, res) => {
         heremap.getPaidAreas(data => {
@@ -157,7 +157,6 @@ function start(){
 
     app.post('/matchroute', async (req, res) => {
         const { body } = req
-        console.log(body)
         await heremap.matchSingleRoute(body.route, (matchedRoute) => {
             res.send(matchedRoute)
         })
@@ -167,7 +166,7 @@ function start(){
       await dbEvents.clearDatabase(
         (status) => {
         res.send(status)
-      })   
+      })
     })
 
     app.listen(8080, () => console.log('REST API listening on port 8080.'));

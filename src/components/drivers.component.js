@@ -27,7 +27,7 @@ class DriversListComponent extends Component {
                 </span>
                 {route.cost && (
                   <span className="driverRoutes--cost" >
-                    Toll value: <b>{route.cost}</b> € per meter
+                    Toll value: <b>{route.cost}</b> €
                   </span> 
                 )}
               </span>

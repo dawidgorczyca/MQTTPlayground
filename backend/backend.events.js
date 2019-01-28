@@ -236,13 +236,14 @@ async function clearDatabase(cb){
 
 async function initBackend() {
   try {
-    await initializeCollections(dbConfig)
-    await heremap.getPaidAreas(data => {
-      console.log('paid areas data', data)
-      data.forEach((fenceData) => {
-        insertFence(fenceData)
+    await dropDatabase(dbConfig, async () => {
+      await heremap.getPaidAreas(data => {
+        console.log('paid areas data', data)
+        data.forEach((fenceData) => {
+          insertFence(fenceData)
+        })
+        console.log(data)
       })
-      console.log(data)
     })
   } catch(e) {
     console.log(e)
